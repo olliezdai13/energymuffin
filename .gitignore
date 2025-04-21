@@ -1,0 +1,33 @@
+# dependencies
+/node_modules
+
+# next.js build output
+/.next
+/out
+
+# production
+/build
+
+# local files
+/.env*.local
+/local.env
+/cache
+.DS_Store
+.vscode
+
+# Log files
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# testing
+/coverage
+
+# misc
+.pnp
+.pnp.js
+
+# Optional: Keep next.lock file if you are using older versions of Next.js
+# next.lock
