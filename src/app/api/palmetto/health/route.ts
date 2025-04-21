@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json(health);
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to check Palmetto health' },
+      { error: `Failed to check Palmetto health: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     );
   }
