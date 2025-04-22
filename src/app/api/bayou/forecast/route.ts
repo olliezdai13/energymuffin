@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
         // Create forecast request for the same time period
         const endDate = new Date();
-        endDate.setMonth(endDate.getMonth() + monthsAfter);
+        endDate.setMonth(endDate.getMonth() + monthsAfter + 1);
         const startDate = new Date();
         startDate.setMonth(startDate.getMonth() - monthsBefore);
 

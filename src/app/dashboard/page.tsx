@@ -78,8 +78,8 @@ const CustomBar = (props: any) => {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <Paper sx={{ 
-        p: 2, 
+      <Paper sx={{
+        p: 2,
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
         border: '1px solid rgba(0, 0, 0, 0.05)'
       }}>
@@ -87,10 +87,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           {label} {payload[0]?.payload?.isForecasted ? '(Forecasted)' : '(Historical)'}
         </Typography>
         {payload.map((entry: any, index: number) => (
-          <Typography 
-            key={index} 
-            variant="body2" 
-            sx={{ 
+          <Typography
+            key={index}
+            variant="body2"
+            sx={{
               color: entry.color,
               display: 'flex',
               alignItems: 'center',
@@ -98,10 +98,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
               mb: 0.5
             }}
           >
-            <Box component="span" sx={{ 
-              width: 8, 
-              height: 8, 
-              borderRadius: entry.dataKey === 'savings' ? '50%' : '2px', 
+            <Box component="span" sx={{
+              width: 8,
+              height: 8,
+              borderRadius: entry.dataKey === 'savings' ? '50%' : '2px',
               backgroundColor: entry.color,
               display: 'inline-block'
             }} />
@@ -130,38 +130,41 @@ export default function Dashboard() {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const params = new URLSearchParams({
         customerId: customerId.toString(),
         monthsBefore: '12',
         monthsAfter: '12'
       });
-      
+
       const response = await fetch(`/api/bayou/forecast?${params.toString()}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch forecast data');
       }
-      
+
       const data = await response.json();
-      
+
       if (!data || !data.monthly_forecasts) {
         throw new Error('Invalid forecast data received');
       }
-      
+
       // Transform the forecast data into the format expected by the chart
-      const transformedData = data.monthly_forecasts.map((record: any) => ({
-        month: new Date(record.month_year).toLocaleString('default', { month: 'short' }),
-        usage: Math.round(record.action_cost || 0),
-        savings: Math.round(record.action_savings || 0),
-        isForecasted: new Date(record.month_year) > new Date()
-      }));
-      
+      const transformedData = data.monthly_forecasts.map((record: any) => {
+        const isForecasted = new Date(record.month_year) > new Date();
+        return {
+          month: new Date(record.month_year).toLocaleString('default', { month: 'short' }),
+          usage: isForecasted ? Math.round(record.action_cost || 0) : Math.round(record.baseline_cost || 0),
+          savings: isForecasted ? Math.round(record.action_savings || 0) : null,
+          isForecasted: isForecasted
+        };
+      });
+
       setForecastData(transformedData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch forecast data');
@@ -177,19 +180,19 @@ export default function Dashboard() {
 
   return (
     <main className={styles.page}>
-      <AppBar position="static" elevation={0} sx={{ 
-        backgroundColor: 'white', 
+      <AppBar position="static" elevation={0} sx={{
+        backgroundColor: 'white',
         borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
-        mb: 2 
+        mb: 2
       }}>
         <Container maxWidth="lg">
           <Toolbar sx={{ px: '0 !important' }}>
-            <Box 
-              component={Link} 
+            <Box
+              component={Link}
               href="/"
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
                 gap: 1,
                 textDecoration: 'none',
                 color: 'inherit',
@@ -214,8 +217,8 @@ export default function Dashboard() {
       <Container maxWidth="lg" sx={{ py: 4 }}>
         {error && (
           <Box sx={{ mb: 4 }}>
-            <Paper elevation={0} sx={{ 
-              p: 2, 
+            <Paper elevation={0} sx={{
+              p: 2,
               background: '#ffebee',
               borderRadius: 2,
               border: '1px solid #ffcdd2'
@@ -227,8 +230,8 @@ export default function Dashboard() {
 
         <Box sx={{ width: '100%', mb: 6 }}>
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4, width: '100%' }}>
-            <Paper elevation={0} sx={{ 
-              p: 4, 
+            <Paper elevation={0} sx={{
+              p: 4,
               width: '100%',
               maxWidth: '1200px',
               borderRadius: 3,
@@ -240,13 +243,15 @@ export default function Dashboard() {
                 Save more by doing this
               </Typography>
               <Typography variant="h6" sx={{ color: '#1976d2' }}>
-                Heat your home before 4 PM to save up to $30/month
+                Heat your home before 4 PM to save up to ${forecastData.length > 0
+                  ? forecastData.reduce((sum, record) => sum + (record.savings || 0), 0)
+                  : 30}{forecastData.length > 0 ? " in the next 12 months" : "/month"}
               </Typography>
             </Paper>
           </Box>
-          
-          <Paper elevation={0} sx={{ 
-            p: 4, 
+
+          <Paper elevation={0} sx={{
+            p: 4,
             width: '100%',
             background: 'white',
             borderRadius: 3,
@@ -256,19 +261,19 @@ export default function Dashboard() {
             <Typography variant="h6" gutterBottom sx={{ mb: 3, fontWeight: 600, color: '#1a1a1a' }}>
               Monthly Energy Usage ($) for Heating
             </Typography>
-            <Box sx={{ 
-              width: '100%', 
+            <Box sx={{
+              width: '100%',
               display: 'flex',
               gap: 4,
               alignItems: 'center'
             }}>
               {isLoading ? (
-                <Box sx={{ 
-                  width: '100%', 
-                  height: 400, 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center' 
+                <Box sx={{
+                  width: '100%',
+                  height: 400,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}>
                   <CircularProgress />
                 </Box>
@@ -279,27 +284,28 @@ export default function Dashboard() {
                       data={forecastData.length > 0 ? forecastData : energyData}
                       margin={{ top: 40, right: 30, left: 20, bottom: 20 }}
                       barSize={32}
+                      barGap={8}
                     >
-                      <CartesianGrid 
-                        strokeDasharray="3 3" 
+                      <CartesianGrid
+                        strokeDasharray="3 3"
                         stroke="#f0f0f0"
                         vertical={false}
                       />
-                      <XAxis 
-                        dataKey="month" 
+                      <XAxis
+                        dataKey="month"
                         stroke="#666"
                         tick={{ fill: '#666', fontSize: 12 }}
                         axisLine={{ stroke: '#e0e0e0' }}
                       />
-                      <YAxis 
+                      <YAxis
                         stroke="#666"
                         tick={{ fill: '#666', fontSize: 12 }}
                         axisLine={{ stroke: '#e0e0e0' }}
                         tickFormatter={(value) => `$${value}`}
                       />
                       <Tooltip content={<CustomTooltip />} />
-                      <Legend 
-                        verticalAlign="top" 
+                      <Legend
+                        verticalAlign="top"
                         height={36}
                         iconType="rect"
                         iconSize={8}
@@ -319,9 +325,9 @@ export default function Dashboard() {
                         dot={{ stroke: '#4caf50', strokeWidth: 2, r: 4, fill: 'white' }}
                         activeDot={{ r: 6, stroke: '#4caf50', strokeWidth: 2, fill: 'white' }}
                         connectNulls={true}
-                        label={{ 
+                        label={{
                           position: 'top',
-                          fill: '#4caf50',
+                          fill: 'rgb(102, 102, 102)',
                           fontSize: 12,
                           formatter: (value: any) => value ? `$${value}` : ''
                         }}
@@ -331,10 +337,10 @@ export default function Dashboard() {
                 </Box>
               )}
 
-              <Box sx={{ width: 250, height: 250, position: 'relative' }}>
-                <Typography 
-                  variant="subtitle1" 
-                  align="center" 
+              {/* <Box sx={{ width: 250, height: 250, position: 'relative' }}>
+                <Typography
+                  variant="subtitle1"
+                  align="center"
                   sx={{ mb: 2, fontWeight: 600, color: '#1a1a1a' }}
                 >
                   Energy Usage Breakdown
@@ -351,8 +357,8 @@ export default function Dashboard() {
                       dataKey="value"
                     >
                       {pieData.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
+                        <Cell
+                          key={`cell-${index}`}
                           fill={entry.color}
                           fillOpacity={entry.name === 'Space Heating' ? 1 : 0.7}
                           stroke={entry.name === 'Space Heating' ? '#1976d2' : 'none'}
@@ -360,12 +366,12 @@ export default function Dashboard() {
                         />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value: any) => `${value}%`}
                     />
                   </PieChart>
                 </ResponsiveContainer>
-              </Box>
+              </Box> */}
             </Box>
           </Paper>
         </Box>
