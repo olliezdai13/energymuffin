@@ -17,6 +17,7 @@ import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
 import React, { useState } from 'react';
 import { SignInButton } from '../components/SignInButton';
+import Link from 'next/link';
 
 // Mock data for energy usage and projected savings
 const energyData = [
@@ -127,7 +128,7 @@ export default function Dashboard() {
         <Container maxWidth="lg">
           <Toolbar sx={{ px: '0 !important' }}>
             <Box 
-              component="a" 
+              component={Link} 
               href="/"
               sx={{ 
                 display: 'flex', 

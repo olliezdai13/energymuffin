@@ -27,6 +27,7 @@ import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
 import React, { useState } from 'react';
 import { SignInButton } from './components/SignInButton';
+import Link from 'next/link';
 
 // Sample data for comparison charts
 const withoutMuffinData = [
@@ -149,7 +150,7 @@ export default function Home() {
               <ListItem
                 key={item.text}
                 onClick={() => handleTabChange(index)}
-                component={item.href ? 'a' : 'div'}
+                component={item.href ? Link : 'div'}
                 href={item.href}
                 sx={{
                   backgroundColor: selectedTab === index ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
@@ -342,6 +343,7 @@ export default function Home() {
                   <Button 
                     variant="contained" 
                     size="large"
+                    component={Link}
                     href="/dashboard"
                     sx={{ 
                       px: 4, 
