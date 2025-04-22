@@ -9,8 +9,15 @@ export async function POST(request: Request) {
     // Get the webhook payload
     const payload = await request.json();
 
+    // Format the event for storage
+    const formattedEvent = {
+      event: payload.event,
+      object: payload.object,
+      timestamp: new Date() // Add current timestamp
+    };
+
     // Store customer credential events
-    customerCredentialStore.addEvent(payload);
+    customerCredentialStore.addEvent(formattedEvent);
 
     // Emit the webhook event
     console.log(`Emitting webhook event: ${payload.event}`);

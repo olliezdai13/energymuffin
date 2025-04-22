@@ -1,6 +1,6 @@
 // I am so unproud of this... what are databases even? What are tokens? WHAT IS AN EXPIRATION DATE?
 
-interface CustomerCredentialEvent {
+export interface CustomerCredentialEvent {
   event: string;
   object: {
     id: number;
@@ -24,6 +24,10 @@ class CustomerCredentialStore {
 
   getEvent(customerId: number): CustomerCredentialEvent | undefined {
     return this.events.get(customerId);
+  }
+
+  getEventsMap(): Map<number, CustomerCredentialEvent> {
+    return this.events;
   }
 
   hasFilledCredentials(customerId: number): boolean {
