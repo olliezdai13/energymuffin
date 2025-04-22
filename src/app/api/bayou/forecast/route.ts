@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
             new Date(bill.billing_period_from || ""),
             new Date(bill.billing_period_to || ""),
             'consumption.electricity',
-            ((bill.electricity_consumption / 1000) || 0)
+            (bill.electricity_consumption || 0) / 1000
         ));
         console.log(`Created ${consumptionRecords.length} consumption records`);
 
