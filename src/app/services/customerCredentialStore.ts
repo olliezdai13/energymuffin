@@ -1,3 +1,5 @@
+// I am so unproud of this... what are databases even? What are tokens? WHAT IS AN EXPIRATION DATE?
+
 interface CustomerCredentialEvent {
   event: string;
   object: {

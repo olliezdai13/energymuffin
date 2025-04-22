@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { customerCredentialStore } from '@/app/services/customerCredentialStore';
+// god help us
 
 export async function POST(request: Request) {
   try {
