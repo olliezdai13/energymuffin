@@ -6,10 +6,7 @@ export async function GET() {
   try {
     const health = await checkHealth();
     return NextResponse.json(health);
-  } catch (error) {
-    return NextResponse.json(
-      { error: `Failed to check Palmetto health: ${error instanceof Error ? error.message : 'Unknown error'}` },
-      { status: 500 }
-    );
+  } catch {
+    return NextResponse.json({ status: 'error' }, { status: 500 });
   }
 }
