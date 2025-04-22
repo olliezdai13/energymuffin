@@ -23,7 +23,9 @@ import LockIcon from '@mui/icons-material/Lock';
 import ContactSupportIcon from '@mui/icons-material/ContactSupport';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import React from 'react';
+import Modal from '@mui/material/Modal';
+import CircularProgress from '@mui/material/CircularProgress';
+import React, { useState } from 'react';
 
 // Sample data for comparison charts
 const withoutMuffinData = [
@@ -70,9 +72,43 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export default function Home() {
   const [selectedTab, setSelectedTab] = React.useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [customerId, setCustomerId] = useState<number | null>(null);
+  const [onboardingLink, setOnboardingLink] = useState<string | null>(null);
 
   const handleTabChange = (index: number) => {
     setSelectedTab(index);
+  };
+
+  const handleSignIn = async () => {
+    try {
+      setIsModalOpen(true);
+      setIsWaiting(true);
+      
+      // Call the sign-in API
+      const response = await fetch('/api/bayou/signIn', {
+        method: 'POST',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate sign-in link');
+      }
+      
+      const data = await response.json();
+      setCustomerId(data.customer_id);
+      setOnboardingLink(data.onboarding_link);
+
+      // Close modal and reset states
+      setIsModalOpen(false);
+      setIsWaiting(false);
+      setCustomerId(null);
+      setOnboardingLink(null);
+      
+    } catch (error) {
+      console.error('Error during sign-in:', error);
+      setIsWaiting(false);
+    }
   };
 
   const drawerWidth = 240;
@@ -114,9 +150,66 @@ export default function Home() {
                 Energy Muffin
               </Typography>
             </Box>
+            <Button 
+              variant="contained" 
+              color="primary"
+              onClick={handleSignIn}
+              sx={{ ml: 'auto' }}
+            >
+              Sign In
+            </Button>
           </Toolbar>
         </Container>
       </AppBar>
+
+      <Modal
+        open={isModalOpen}
+        onClose={() => !isWaiting && setIsModalOpen(false)}
+        aria-labelledby="sign-in-modal"
+        aria-describedby="sign-in-modal-description"
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          p: 4,
+          borderRadius: 2,
+          textAlign: 'center'
+        }}>
+          {isWaiting ? (
+            <>
+              <CircularProgress sx={{ mb: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                Waiting for credentials...
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Please complete the sign-in process in the new window
+              </Typography>
+            </>
+          ) : (
+            <>
+              <Typography variant="h6" gutterBottom>
+                Sign In Required
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Please sign in to view your energy data
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSignIn}
+                disabled={isWaiting}
+              >
+                Start Sign In
+              </Button>
+            </>
+          )}
+        </Box>
+      </Modal>
 
       <Box sx={{ display: 'flex' }}>
         <Drawer

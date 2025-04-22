@@ -34,3 +34,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+DEV SETUP:
+- install node js
+- install homebrew
+- might have to do an 'npm install'
+- might have to do a 'brew install ngrok'
+
+HOW TO RUN DEV:
+- 'npm run dev'
+- in another terminal: 'ngrok http 3000'
+- pass the ngrok public url into 'https://staging.bayou.energy/dashboard/settings' in the webhooks text box

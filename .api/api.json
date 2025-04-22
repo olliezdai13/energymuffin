@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "bayou",
+      "source": "@bayou/v2.0#1xj8qx2m8swob6l",
+      "integrity": "sha512-U6UMUY5gfXjTuZEl3MHHcXoMbiXbWrx8Ka6cjJ6sljqsle77+UfgLaREaVELlLXvvzBxGgvm7b5H9PMz63axjQ==",
+      "installerVersion": "6.1.3"
+    }
+  ]
+}
