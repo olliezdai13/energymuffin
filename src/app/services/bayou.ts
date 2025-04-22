@@ -5,7 +5,7 @@ import { waitForWebhookEvent } from './webhookEvents';
 export { waitForWebhookEvent };
 
 // Initialize Bayou client
-function initBayouClient() {
+export function initBayouClient() {
     bayou.auth(process.env.BAYOU_API_KEY || "");
     bayou.server('https://staging.bayou.energy/api/v2');
 }
@@ -59,6 +59,33 @@ export async function getCustomerIntervals(customerId: number) {
         return response.data;
     } catch (error) {
         console.error('Error fetching customer intervals:', error);
+        throw error;
+    }
+}
+
+export async function getCustomerBillHistory(customerId: number, months: number = 12) {
+    try {
+        initBayouClient();
+        
+        const endDate = new Date();
+        const startDate = new Date(endDate.getTime() - months * 30 * 24 * 60 * 60 * 1000);
+        
+        console.log("fetching bill history for customerId", customerId);
+
+        const response = await bayou.getCustomersCustomer_idBills({
+            customer_id: customerId.toString(),
+            // format: yyyy-mm-dd
+            start: startDate.toISOString().split('T')[0],
+            end: endDate.toISOString().split('T')[0]
+        });
+
+        if (response.data.length !== 0) {
+            console.log(`${response.data.length} bills found for customerId`, customerId);
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching customer bill history:', error);
         throw error;
     }
 }
