@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { webhookEvents } from '@/app/services/webhookEvents';
+import { customerCredentialStore } from '@/app/services/customerCredentialStore';
 
 export async function POST(request: Request) {
   try {
@@ -7,6 +8,9 @@ export async function POST(request: Request) {
     
     // Get the webhook payload
     const payload = await request.json();
+
+    // Store customer credential events
+    customerCredentialStore.addEvent(payload);
 
     // Emit the webhook event
     console.log(`Emitting webhook event: ${payload.event}`);
