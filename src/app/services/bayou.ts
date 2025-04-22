@@ -1,39 +1,86 @@
 import bayou from '@api/bayou';
 import { waitForWebhookEvent } from './webhookEvents';
 
-export async function createCustomer() {
-    try {
-        bayou.auth(process.env.BAYOU_API_KEY || "");
-        bayou.server('https://staging.bayou.energy/api/v2');
+// Re-export waitForWebhookEvent
+export { waitForWebhookEvent };
 
+// Initialize Bayou client
+function initBayouClient() {
+    bayou.auth(process.env.BAYOU_API_KEY || "");
+    bayou.server('https://staging.bayou.energy/api/v2');
+}
+
+export async function generateSignInLink() {
+    try {
+        initBayouClient();
+
+        // Create customer with test utility
         const customerData = {
-            utility: "speculoos_power"
+            utility: "speculoos_power"  // Bayou's test utility
         };
 
         const response = await bayou.postCustomers(customerData);
-        let customer = response.data;
+        const customer = response.data;
 
         if (!customer.id) {
             throw new Error('Customer ID is missing from response');
         }
 
-        console.log(`Fill the customer credentials using the following link: ${customer.onboarding_link}
-        For credentials: The email is iamvalid@bayou.energy and the password is validpassword. We'll wait while you complete the form!`);
+        return {
+            onboarding_link: customer.onboarding_link,
+            customer_id: customer.id,
+            message: "Use the following credentials to sign in: email: iamvalid@bayou.energy, password: validpassword"
+        };
+    } catch (error) {
+        console.error('Error generating sign-in link:', error);
+        throw error;
+    }
+}
+
+export async function getCustomerBills(customerId: number) {
+    try {
+        initBayouClient();
+        const response = await bayou.getCustomersCustomer_idBills({
+            customer_id: customerId.toString()
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching customer bills:', error);
+        throw error;
+    }
+}
+
+export async function getCustomerIntervals(customerId: number) {
+    try {
+        initBayouClient();
+        const response = await bayou.getCustomersCustomer_idIntervals({
+            customer_id: customerId.toString()
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching customer intervals:', error);
+        throw error;
+    }
+}
+
+export async function quickStart() {
+    try {
+        // Generate sign-in link and get customer ID
+        const { customer_id, onboarding_link, message } = await generateSignInLink();
+        
+        console.log(`Fill the customer credentials using the following link: ${onboarding_link}
+        ${message}`);
 
         // Wait for customer_has_filled_credentials webhook
-        await waitForWebhookEvent('customer_has_filled_credentials', customer.id);
+        await waitForWebhookEvent('customer_has_filled_credentials', customer_id);
         console.log("Customer has filled credentials. Fetching bills...");
 
         // Wait for bills_ready webhook
-        await waitForWebhookEvent('bills_ready', customer.id);
+        await waitForWebhookEvent('bills_ready', customer_id);
         console.log("Bills are ready. Fetching bills data...");
 
-        // Get all bills for a specific customer
-        const billResponse = await bayou.getCustomersCustomer_idBills({
-            customer_id: customer.id.toString()
-        });
-        const bills = billResponse.data;
-
+        // Get and display bills
+        const bills = await getCustomerBills(customer_id);
         console.log("\nFirst 12 bills:\n");
         bills.slice(0, 12).forEach(bill => {
             console.log(bill);
@@ -44,15 +91,11 @@ export async function createCustomer() {
         console.log("\nNow we'll wait for intervals to be ready...");
 
         // Wait for intervals_ready webhook
-        await waitForWebhookEvent('intervals_ready', customer.id);
+        await waitForWebhookEvent('intervals_ready', customer_id);
         console.log("Intervals are ready. Fetching intervals data...");
 
-        // Get all intervals for a specific customer
-        const intervalsResponse = await bayou.getCustomersCustomer_idIntervals({
-            customer_id: customer.id.toString()
-        });
-        const intervals = intervalsResponse.data;
-
+        // Get and display intervals
+        const intervals = await getCustomerIntervals(customer_id);
         console.log("\nIntervals for each meter:\n");
 
         intervals.meters?.forEach(meter => {
@@ -77,7 +120,7 @@ export async function createCustomer() {
         return {};
 
     } catch (error) {
-        console.error('Error creating customer:', error);
+        console.error('Error in quickStart:', error);
         throw error;
     }
 }

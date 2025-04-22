@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createCustomer } from '@/app/services/bayou';
+import { quickStart } from '@/app/services/bayou';
 
 // GET /api/bayou
+// this is a demo endpoint to quickly start the customer onboarding process
 export async function POST() {
   try {
-    const response = await createCustomer();
+    const response = await quickStart();
     return NextResponse.json(response);
   } catch (error) {
     return NextResponse.json(
@@ -13,3 +14,4 @@ export async function POST() {
     );
   }
 }
+
