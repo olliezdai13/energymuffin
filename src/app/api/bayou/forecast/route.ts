@@ -78,7 +78,8 @@ export async function POST(request: NextRequest) {
             },
             body: JSON.stringify({
                 forecast: forecastRequest,
-                consumption_records: consumptionRecords
+                consumption_records: consumptionRecords,
+                HVAC_info: [{variable: "heating", start_time: 12, duration: 3, setpoint: 21}]
             })
         });
 

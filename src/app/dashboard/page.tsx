@@ -157,8 +157,8 @@ export default function Dashboard() {
       // Transform the forecast data into the format expected by the chart
       const transformedData = data.monthly_forecasts.map((record: any) => ({
         month: new Date(record.month_year).toLocaleString('default', { month: 'short' }),
-        usage: record.action_cost || 0,
-        savings: record.action_savings || 0,
+        usage: Math.round(record.action_cost || 0),
+        savings: Math.round(record.action_savings || 0),
         isForecasted: new Date(record.month_year) > new Date()
       }));
       
