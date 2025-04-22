@@ -22,8 +22,8 @@ export function createConsumptionRecord(
     value: number
 ): ConsumptionRecord {
     return {
-        from_datetime: fromDatetime.toISOString(),
-        to_datetime: toDatetime.toISOString(),
+        from_datetime: fromDatetime.toISOString().split('T')[0],
+        to_datetime: toDatetime.toISOString().split('T')[0],
         variable,
         value
     };

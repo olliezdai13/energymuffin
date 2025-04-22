@@ -90,6 +90,7 @@ export async function getCustomerBillHistory(customerId: number, months: number 
     }
 }
 
+// for testing purposes, ignore.
 export async function quickStart() {
     try {
         // Generate sign-in link and get customer ID
