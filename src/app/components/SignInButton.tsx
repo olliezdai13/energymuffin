@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import Button from '@mui/material/Button';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -5,6 +7,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useAppContext } from '../context/AppContext';
 
 interface SignInButtonProps {
   onSignIn?: () => void;
@@ -13,9 +16,8 @@ interface SignInButtonProps {
 export function SignInButton({ onSignIn }: SignInButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
-  const [customerId, setCustomerId] = useState<number | null>(null);
   const [onboardingLink, setOnboardingLink] = useState<string | null>(null);
-  const [hasCredentials, setHasCredentials] = useState(false);
+  const { hasCredentials, customerId, setHasCredentials, setCustomerId } = useAppContext();
 
   const checkCredentials = async (customerId: number) => {
     try {
