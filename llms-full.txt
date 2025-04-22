@@ -1,0 +1,4183 @@
+# Bayou Energy Documentation
+
+## About Bayou Energy
+Bayou Energy provides a suite of APIâ€™s for companies to effectively deploy clean energy devices across many utilities.
+
+Our first product is an API that gives companies access to any metered utility data instantly and reliably. The API takes minutes to integrate. Consumers authenticate their utility accounts with one-click, and developers get access to utility account, bill, and usage interval data in 60 seconds or less.
+
+## Bayou Energy API
+This is the documentation page for Bayou Energy's Utility Data API. This API allows you to manage your connected utility accounts and retrieve utility data for those accounts. Learn more about Bayou Energy at [www.bayou.energy](https://www.bayou.energy/).
+
+
+
+
+
+
+
+## API Key Authentication
+We use API keys to authenticate requests. You can find your API keys in the [Bayou Dashboard](https://staging.bayou.energy/dashboard).
+
+Authentication is provided through HTTP Basic Authentication. Use your API key as the username value in the Basic Authentication scheme. The password value does not need to be filled.
+
+
+
+
+
+
+
+## Bill Upload API
+
+
+#### URL Expired
+
+The URL for this request expired after 30 days.
+
+Via documentation for more details: [https://docs.bayou.energy/docs/bill-upload](https://docs.bayou.energy/docs/bill-upload)
+
+customer\_id
+
+string
+
+Can be either Bayou's numeric ID for the bill's customer or your own [identifier](https://docs.bayou.energy/reference/external-ids) preceded with `external_id:`. This field is optional.
+
+file
+
+file
+
+required
+
+The PDF file of the bill to parse
+
+# `` 200      Successfully uploaded the bill
+
+object
+
+id
+
+integer
+
+The ID of this bill
+
+external\_id
+
+string
+
+Your own [identifier](https://docs.bayou.energy/reference/external-ids) for this bill (this field must be unique)
+
+# `` 400      Bad Request
+
+object
+
+error\_type
+
+string
+
+The type of error
+
+error\_code
+
+string
+
+The error code
+
+error\_message
+
+string
+
+The error message
+
+docs\_url
+
+string
+
+A link to documentation providing more details about the error
+
+# `` 404      Not Found
+
+object
+
+error\_type
+
+string
+
+The type of error
+
+error\_code
+
+string
+
+The error code
+
+error\_message
+
+string
+
+The error message
+
+docs\_url
+
+string
+
+A link to documentation providing more details about the error
+
+# `` 409      Conflict
+
+object
+
+error\_type
+
+string
+
+The type of error
+
+error\_code
+
+string
+
+The error code
+
+error\_message
+
+string
+
+The error message
+
+docs\_url
+
+string
+
+A link to documentation providing more details about the error
+
+# `` 415      Unsupported Media Type
+
+object
+
+error\_type
+
+string
+
+The type of error
+
+error\_code
+
+string
+
+The error code
+
+error\_message
+
+string
+
+The error message
+
+docs\_url
+
+string
+
+A link to documentation providing more details about the error
+
+
+
+
+
+
+:
+
+Base URL
+
+https://bayou.energy/api/v2/bills
+
+```
+
+xxxxxxxxxx
+
+1curl --request POST \
+
+2     --url https://bayou.energy/api/v2/bills \
+
+3     --header 'accept: application/json' \
+
+4     --header 'content-type: multipart/form-data'
+
+```
+
+Click `Try It!` to start a request and see the response here! Or choose an example:
+
+application/json
+
+`` 200`` 400`` 404Â -Â customer id invalid`` 409`` 415
+
+
+
+
+## Unparsed Bill Status
+When bill data is not available instantly, this webhook is sent to allow developers to determine the status of those bills. The webhook contains the customerâ€™s unique identifier(s), the customerâ€™s utility and the expected data velocity for the bill object.
+
+JSON
+
+```rdmd-code lang-json theme-light
+
+{
+    "event": "new_unparsed_bill",
+    "object": {
+        "external_id": "BILL_123",
+        "id": 12345,
+        "status": "unparsed",
+        "customer_id": 12345,
+        "customer_external_id": "MSCOTT123",
+        "utility": "con_edison",
+        "utility_data_velocity": "Instant",
+        "file_url": "https://private.bayou.energy/bills/12345.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=XYZ&X-Amz-Date=20220701T000000Z&X-Amz-Expires=1800&X-Amz-Signature=ABCEF0123456&X-Amz-SignedHeaders=host"
+    }
+}
+
+```
+
+
+
+
+
+
+
+## Customer API Reference
+
+
+:
+
+Base URL
+
+https://bayou.energy/api/v2/customers
+
+Click `Try It!` to start a request and see the response here!
+
+## Customer Account Management
+
+
+#### URL Expired
+
+The URL for this request expired after 30 days.
+
+external\_id
+
+string
+
+Your own [identifier](https://docs.bayou.energy/reference/external-ids) for this customer (this field must be unique)
+
+email
+
+string
+
+This customer's email address
+
+first\_name
+
+string
+
+This customer's first name
+
+last\_name
+
+string
+
+This customer's last name
+
+phone\_number
+
+string
+
+This customer's phone number
+
+address\_line\_1
+
+string
+
+This customer's address (first line)
+
+address\_line\_2
+
+string
+
+This customer's address (second line)
+
+city
+
+string
+
+This customer's city
+
+state
+
+string \| null
+
+This customer's state
+
+NYnullALAKASAZARCACOCTDEDCFMFLGAGUHIIDILINIAKSKYLAMEMHMDMAMIMNMSMOMTNENVNHNJNMNYNCNDMPOHOKORPWPAPRRISCSDTNTXUTVTVIVAWAWVWIWY
+
+zipcode
+
+string
+
+This customer's zipcode
+
+utility
+
+string
+
+This customer's utility. See [Utility support](https://docs.bayou.energy/reference/utility-support) for more information
+
+# `` 201      Successfully created a customer account
+
+object
+
+external\_id
+
+string
+
+Your own [identifier](https://docs.bayou.energy/reference/external-ids) for this customer (this field must be unique)
+
+email
+
+string
+
+This customer's email address
+
+first\_name
+
+string
+
+This customer's first name
+
+last\_name
+
+string
+
+This customer's last name
+
+phone\_number
+
+string
+
+This customer's phone number
+
+address\_line\_1
+
+string
+
+This customer's address (first line)
+
+address\_line\_2
+
+string
+
+This customer's address (second line)
+
+city
+
+string
+
+This customer's city
+
+state
+
+string \| null
+
+This customer's state
+
+`AL` `AK` `AS` `AZ` `AR` `CA` `CO` `CT` `DE` `DC` `FM` `FL` `GA` `GU` `HI` `ID` `IL` `IN` `IA` `KS` `KY` `LA` `ME` `MH` `MD` `MA` `MI` `MN` `MS` `MO` `MT` `NE` `NV` `NH` `NJ` `NM` `NY` `NC` `ND` `MP` `OH` `OK` `OR` `PW` `PA` `PR` `RI` `SC` `SD` `TN` `TX` `UT` `VT` `VI` `VA` `WA` `WV` `WI` `WY`
+
+zipcode
+
+string
+
+This customer's zipcode
+
+utility
+
+string
+
+This customer's utility. See [Utility support](https://docs.bayou.energy/reference/utility-support) for more information
+
+id
+
+integer
+
+The ID of this customer
+
+onboarding\_link
+
+string
+
+The URL at which customers can update their billing and utility account data
+
+onboarding\_token
+
+string
+
+The token to use when embedding the onboarding component in your website, using the Bayou JS library
+
+tags
+
+array of strings
+
+tags
+
+has\_accepted\_terms\_on
+
+date-time
+
+The date and time at which this customer accepted Bayou's terms and conditions
+
+has\_filled\_credentials
+
+boolean
+
+Whether or not the customer has filled credentials using their onboarding link
+
+bills\_are\_ready
+
+boolean
+
+Whether or not the initial fetching of bills for this customer has completed
+
+utility\_has\_intervals
+
+boolean
+
+Whether or not this customer's utility supports interval data
+
+account\_has\_intervals
+
+boolean
+
+Whether or not this customer's has existing interval data
+
+intervals\_are\_ready
+
+boolean
+
+Whether or not the initial fetching of intervals for this customer has completed
+
+first\_interval\_discovered
+
+date-time
+
+The start time of the first interval discovered for this customer
+
+last\_interval\_discovered
+
+date-time
+
+The start time of the last interval discovered for this customer
+
+account\_numbers
+
+array of objects
+
+account\_numbers
+
+object
+
+id
+
+string
+
+The utility identifier for this account number
+
+meters
+
+array of objects
+
+meters
+
+object
+
+id
+
+string
+
+The ID of this meter
+
+type
+
+string
+
+The type of this meter
+
+`gas` `electric`
+
+tariffs
+
+array of objects
+
+tariffs
+
+object
+
+tariff
+
+string
+
+The name of this tariff
+
+period\_from
+
+date
+
+The start of the period this tariff was used for this meter
+
+period\_to
+
+date
+
+The end of the period this tariff was used for this meter
+
+tags
+
+array of strings
+
+tags
+
+address
+
+object
+
+address object
+
+additional\_attributes
+
+object
+
+Additional attributes for this meter
+
+additional\_attributes object
+
+tags
+
+array of strings
+
+tags
+
+# `` 400      Bad Request
+
+object
+
+error\_type
+
+string
+
+The type of error
+
+error\_code
+
+string
+
+The error code
+
+error\_message
+
+string
+
+The error message
+
+docs\_url
+
+string
+
+A link to documentation providing more details about the error
+
+# `` 409      Conflict
+
+object
+
+error\_type
+
+string
+
+The type of error
+
+error\_code
+
+string
+
+The error code
+
+error\_message
+
+string
+
+The error message
+
+docs\_url
+
+string
+
+A link to documentation providing more details about the error
+
+
+
+
+
+
+:
+
+Base URL
+
+https://bayou.energy/api/v2/customers
+
+```
+
+xxxxxxxxxx
+
+1curl --request POST \
+
+2     --url https://bayou.energy/api/v2/customers \
+
+3     --header 'accept: application/json' \
+
+4     --header 'content-type: application/json'
+
+```
+
+Click `Try It!` to start a request and see the response here! Or choose an example:
+
+application/json
+
+`` 201`` 400Â -Â customer email invalid`` 400Â -Â customer first name invalid`` 400Â -Â customer last name invalid`` 400Â -Â customer phone number invalid`` 400Â -Â customer state invalid`` 400Â -Â customer zipcode invalid`` 400Â -Â utility code input invalid`` 409
+
+
+
+
+## Customer Reauthentication
+Once Bayou determines that customer data cannot be accessed, a [customer\_must\_reauthenticate webhook](https://docs.bayou.energy/reference/customer_must_reauthenticate-1) is sent. This happens either because a customer's utility credentials are no longer valid or their [multi-factor authentication](https://dash.readme.com/project/bayou/v2.0/docs/multi-factor-authentication-mfa) challenge must be completed again.
+
+JSON
+
+```rdmd-code lang-json theme-light
+
+{
+    "event": "customer_must_reauthenticate",
+    "object": {
+        "id": 12345,
+        "external_id": "MSCOTT123",
+        "reason": "credentials_are_invalid",
+        "onboarding_token": "ABCDEF0123456_ABCDEF0123456_ABCDEF0123456",
+        "onboarding_link": "https://bayou.energy/companies/12345/sign_up?key=ABCDEF0123456"
+    }
+}
+
+```
+
+Within the webhook body you can use either the onboarding\_url or onboarding\_token (if you're using [Bayou's embedded component](https://dash.readme.com/project/bayou/v2.0/docs/bayou-embedded-component)) to direct the customer to re-authenticate their utility account.
+
+After the customer has re-authenticated, the [customer\_has\_filled\_credentials](https://dash.readme.com/project/bayou/v2.0/docs/customer_has_filled_credentials-webhook) and webhooks for any new data will be sent.
+
+- New bill data will be indicated either by the [new\_bill](https://docs.bayou.energy/reference/event-informing-that-a-new-bill-was-discovered-webhook) or [new\_unparsed\_bill](https://docs.bayou.energy/reference/new_bill_status_unparsed) webhooks.
+- New interval data will be indicated by the new\_intervals webhook
+
+
+
+
+## Bayou API Errors
+# Error Status   [Skip link to Error Status](https://docs.bayou.energy/docs/errors\#error-status)
+
+Bayou's API handles errors by sending custom responses that provide valuable insight to developers and guidance on how to fix the error.
+
+In general, 200 HTTP codes correspond to success, 4XX codes are for developer- or user-related failures, and 5XX codes are for Bayou-related issues.
+
+| HTTP Code | Status | What Bayou uses it for |
+| --- | --- | --- |
+| 200 | Ok | Everything worked as expected |
+| 400 | Bad request | Request unacceptable, usually because of a missing parameter |
+| 401 | Unauthorized | No valid API key provided |
+| 403 | Forbidden | API key doesnâ€™t have permission to perform the requested action |
+| 404 | Not Found | The requested object doesnâ€™t exist |
+| 405 | Method Not Allowed | The request's HTTP method is not supported for this route |
+| 409 | Conflict | Request conflicts with another request, usually related to external\_id |
+| 415 | Unsupported Media Type | The payload format is in an unsupported format |
+| 500 | Server error | Issue on Bayou's side |
+
+# Error Code Convention   [Skip link to Error Code Convention](https://docs.bayou.energy/docs/errors\#error-code-convention)
+
+Error codes from Bayou's API follow a standard format. The error object includes the following fields: error\_type, error\_code, error\_message, and docs\_url. Below is an example of a 400 error code:
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œutility_code_invalidâ€,
+	â€error_messageâ€: â€œThe utility code you provided in the request is invalid. Did you mean commonwealth_edison? A full list of utility codes can be found here: https://docs.bayou.energy/reference/utility-supportâ€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#utility_code_input_invalidâ€
+}
+
+```
+
+# Error Types   [Skip link to Error Types](https://docs.bayou.energy/docs/errors\#error-types)
+
+Below is a list of the error\_types in Bayou's API:
+
+| error\_type | Explanation |
+| --- | --- |
+| invalid\_input | An input error occurs when a request has an invalid or missing parameter. |
+| invalid\_request | An invalid request occurs when a requested route or the requested information doesnâ€™t exist. |
+| auth\_error | An auth error occurs when the API key is missing or doesnâ€™t have permission to perform the requested action. |
+| api\_error | API errors cover any internal errors that may occur. |
+
+
+
+* * *
+
+See all error codes here: [https://docs.bayou.energy/docs/error-codes](https://docs.bayou.energy/docs/error-codes)
+
+
+## Speculoos Power Testing
+Speculoos Power is Bayou's fake utility that can be used for development and testing. Any password will be accepted for all accounts, to test incorrect credentials, change the email for the user to be incorrect.
+
+# Test credentials   [Skip link to Test credentials](https://docs.bayou.energy/docs/speculoos\#test-credentials)
+
+| Use case | Email |
+| --- | --- |
+| Used in [Bayou's QuickStart guide](https://docs.bayou.energy/docs/quickstart), this is the main account you can use for testing. This account will return fake bills and intervals with both gas and electric data. | [iamvalid@bayou.energy](mailto:iamvalid@bayou.energy) |
+| [There are multiple test credentials available for multi-factor authentication testing](https://docs.bayou.energy/docs/multi-factor-authentication-mfa#testing-with-speculoos). | [See multi-factor authentication page for details](https://docs.bayou.energy/docs/multi-factor-authentication-mfa#testing-with-speculoos) |
+| This customer will return multiple accounts with fake bills and intervals with both gas and electric data. | [multi-account@bayou.energy](mailto:multi-account@bayou.energy) |
+| This customer will return fake bills and intervals only with electric data. | [electric-only@bayou.energy](mailto:electric-only@bayou.energy) |
+| This customer will return fake bills and intervals only with gas data. | [gas-only@bayou.energy](mailto:gas-only@bayou.energy) |
+| Used to test the customer\_must\_reauthenticate webhook. The customer will return fake bills and intervals data, then its credentials will be marked as incorrect and the customer\_must\_reauthenticate webhook will be sent. | [customer-must-reauthenticate@bayou.energy](mailto:customer-must-reauthenticate@bayou.energy) |
+
+
+
+
+## Utility Bill Upload
+# Overview   [Skip link to Overview](https://docs.bayou.energy/docs/bill-upload\#overview)
+
+Bayou Energy Bill upload provides companies with API access to data from automatically parsed customer utility bill PDFâ€™s.
+
+Now customer utility bill PDFâ€™s can be uploaded via API or forwarded to a single email address where they will be automatically parsed and returned via API to the clean energy companyâ€™s application.
+
+# Context   [Skip link to Context](https://docs.bayou.energy/docs/bill-upload\#context)
+
+Having a customer share their utility credentials can be challenging, especially when only a single bill is required or in enterprise sales where finding the correct person with access to those credentials can be difficult. As a workaround, end customers often share a PDF copy of their utility bill with their clean energy company. Previously, customer utility bill PDFâ€™s received via email were then manually parsed by the companyâ€™s employees and uploaded to their database for use, distracting employees from their core business and sales process.
+
+# Using the feature   [Skip link to Using the feature](https://docs.bayou.energy/docs/bill-upload\#using-the-feature)
+
+> ## ðŸš§  Currently uploaded bills must be in PDF format, images of utility bills are not yet supported.
+
+## Uploading bills   [Skip link to Uploading bills](https://docs.bayou.energy/docs/bill-upload\#uploading-bills)
+
+### Via API   [Skip link to Via API](https://docs.bayou.energy/docs/bill-upload\#via-api)
+
+Bills can be uploaded via API as outlined [here](https://docs.bayou.energy/reference/post_bills).
+
+### Forwarding bills via email   [Skip link to Forwarding bills via email](https://docs.bayou.energy/docs/bill-upload\#forwarding-bills-via-email)
+
+Before forwarding bills via email, [request access by emailing Bayou support](mailto:support@bayou.energy). Bayou will respond letting you know when the feature has been enabled for your company.
+
+After access has been granted, bills can be forwarded to a specific email address depending on the environment:
+
+- **Production environment**: forward to [bills@in.bayou.energy](mailto:bills@in.bayou.energy)
+- **Staging environment**: forward to [bills@in.staging.bayou.energy](mailto:bills@in.staging.bayou.energy)
+
+For security reasons only someone with your companyâ€™s email domain can forward a bill to your account. As an example, for the fake company electriccitysolar.com, only email addresses with @electriccitysolar.com are able to forward utility bill PDFâ€™s.
+
+## After upload behavior   [Skip link to After upload behavior](https://docs.bayou.energy/docs/bill-upload\#after-upload-behavior)
+
+Bills will be assigned to a customer. A unique customer is categorized by the pair of utility and customer utility account number. Bills from existing customers will be tied to those same customers while bills for new customers will automatically create new customers.
+
+Uploaded bills have the value â€œemailâ€ or "API" for their source. Bills collected via the normal customer credential sharing form are marked as source â€œutilityâ€
+
+## Accessing uploaded bills   [Skip link to Accessing uploaded bills](https://docs.bayou.energy/docs/bill-upload\#accessing-uploaded-bills)
+
+Forwarded bills will be parsed and made available via API where they can be received with a [GET request](https://docs.bayou.energy/reference/get_customers-customer-id-bills-id) or [via Webhook](https://docs.bayou.energy/reference/event-informing-that-a-new-bill-was-discovered-webhook)
+
+# Support   [Skip link to Support](https://docs.bayou.energy/docs/bill-upload\#support)
+
+- For support, email [support@bayou.energy](mailto:support@bayou.energy)
+- For questions or to discuss this feature in more detail, [schedule time here](https://calendly.com/jamesbayouenergy/30min).
+
+
+
+
+## Customer Details API
+
+
+#### URL Expired
+
+The URL for this request expired after 30 days.
+
+id
+
+string
+
+required
+
+Can be either Bayou's numeric ID or your own [identifier](https://docs.bayou.energy/reference/external-ids) for this customer preceded with `external_id:`
+
+# `` 200      Returns the customer account
+
+object
+
+external\_id
+
+string
+
+Your own [identifier](https://docs.bayou.energy/reference/external-ids) for this customer (this field must be unique)
+
+email
+
+string
+
+This customer's email address
+
+first\_name
+
+string
+
+This customer's first name
+
+last\_name
+
+string
+
+This customer's last name
+
+phone\_number
+
+string
+
+This customer's phone number
+
+address\_line\_1
+
+string
+
+This customer's address (first line)
+
+address\_line\_2
+
+string
+
+This customer's address (second line)
+
+city
+
+string
+
+This customer's city
+
+state
+
+string \| null
+
+This customer's state
+
+`AL` `AK` `AS` `AZ` `AR` `CA` `CO` `CT` `DE` `DC` `FM` `FL` `GA` `GU` `HI` `ID` `IL` `IN` `IA` `KS` `KY` `LA` `ME` `MH` `MD` `MA` `MI` `MN` `MS` `MO` `MT` `NE` `NV` `NH` `NJ` `NM` `NY` `NC` `ND` `MP` `OH` `OK` `OR` `PW` `PA` `PR` `RI` `SC` `SD` `TN` `TX` `UT` `VT` `VI` `VA` `WA` `WV` `WI` `WY`
+
+zipcode
+
+string
+
+This customer's zipcode
+
+utility
+
+string
+
+This customer's utility. See [Utility support](https://docs.bayou.energy/reference/utility-support) for more information
+
+id
+
+integer
+
+The ID of this customer
+
+onboarding\_link
+
+string
+
+The URL at which customers can update their billing and utility account data
+
+onboarding\_token
+
+string
+
+The token to use when embedding the onboarding component in your website, using the Bayou JS library
+
+tags
+
+array of strings
+
+tags
+
+has\_accepted\_terms\_on
+
+date-time
+
+The date and time at which this customer accepted Bayou's terms and conditions
+
+has\_filled\_credentials
+
+boolean
+
+Whether or not the customer has filled credentials using their onboarding link
+
+bills\_are\_ready
+
+boolean
+
+Whether or not the initial fetching of bills for this customer has completed
+
+utility\_has\_intervals
+
+boolean
+
+Whether or not this customer's utility supports interval data
+
+account\_has\_intervals
+
+boolean
+
+Whether or not this customer's has existing interval data
+
+intervals\_are\_ready
+
+boolean
+
+Whether or not the initial fetching of intervals for this customer has completed
+
+first\_interval\_discovered
+
+date-time
+
+The start time of the first interval discovered for this customer
+
+last\_interval\_discovered
+
+date-time
+
+The start time of the last interval discovered for this customer
+
+account\_numbers
+
+array of objects
+
+account\_numbers
+
+object
+
+id
+
+string
+
+The utility identifier for this account number
+
+meters
+
+array of objects
+
+meters
+
+object
+
+id
+
+string
+
+The ID of this meter
+
+type
+
+string
+
+The type of this meter
+
+`gas` `electric`
+
+tariffs
+
+array of objects
+
+tariffs
+
+object
+
+tariff
+
+string
+
+The name of this tariff
+
+period\_from
+
+date
+
+The start of the period this tariff was used for this meter
+
+period\_to
+
+date
+
+The end of the period this tariff was used for this meter
+
+tags
+
+array of strings
+
+tags
+
+address
+
+object
+
+address object
+
+additional\_attributes
+
+object
+
+Additional attributes for this meter
+
+additional\_attributes object
+
+tags
+
+array of strings
+
+tags
+
+# `` 404      Not Found
+
+object
+
+error\_type
+
+string
+
+The type of error
+
+error\_code
+
+string
+
+The error code
+
+error\_message
+
+string
+
+The error message
+
+docs\_url
+
+string
+
+A link to documentation providing more details about the error
+
+
+
+
+
+
+:
+
+Base URL
+
+https://bayou.energy/api/v2/customers/{id}
+
+```
+
+xxxxxxxxxx
+
+1curl --request GET \
+
+2     --url https://bayou.energy/api/v2/customers/id \
+
+3     --header 'accept: application/json'
+
+```
+
+Click `Try It!` to start a request and see the response here! Or choose an example:
+
+application/json
+
+`` 200`` 404Â -Â customer id invalid
+
+
+
+
+## User Management Guide
+# Invite a new user   [Skip link to Invite a new user](https://docs.bayou.energy/docs/user-management\#invite-a-new-user)
+
+Users can be added to your Bayou workspace from the dashboard. To add a user:
+
+Visit your Bayou Energy Dashboard (either [staging](https://staging.bayou.energy/dashboard/) or [production](https://bayou.energy/dashboard/)).
+
+Once logged in, navigate to the settings tab and scroll down to the â€œUsersâ€ section. Here you will see your current user list.
+
+Invite a new user by entering their email address and clicking the blue invite button.
+
+![](https://files.readme.io/eaddf09-Screenshot_2024-05-16_at_08.56.22.png)
+
+# Creating a new user account via invitation   [Skip link to Creating a new user account via invitation](https://docs.bayou.energy/docs/user-management\#creating-a-new-user-account-via-invitation)
+
+After clicking the invite button, users will receive an email address to create their account. The email address will be noreply@\[Bayou environment, staging or production\].bayou.energy
+
+![](https://files.readme.io/271af12-Screenshot_2024-05-16_at_08.56.49.png)
+
+After clicking the yellow Create my account on Bayou button, users will be prompted to set their password.
+
+![](https://files.readme.io/fb4b1b9-Screenshot_2024-05-16_at_08.57.44.png)
+
+After their password has been set, the user will be directed to Bayouâ€™s login screen to login for the first time.
+
+> ## ðŸ“˜  Make sure the current environment tab is toggled to the environment for your account. Bayou has two environments:
+>
+> - Test: corresponds to Bayou's staging environment and will show a page url [https://staging.bayou.energy/users/sign\_in](https://staging.bayou.energy/users/sign_in)
+> - Live: corresponds to Bayou's production environment and will show a page url [https://bayou.energy/users/sign\_in](https://bayou.energy/users/sign_in)
+>
+> If you're not sure which environment you're in, you can check the url of the page you're currently on.
+
+![](https://files.readme.io/501b18a-Screenshot_2024-05-16_at_08.58.27.png)
+
+# Reset password   [Skip link to Reset password](https://docs.bayou.energy/docs/user-management\#reset-password)
+
+If a user doesnâ€™t remember their password, they can click the blue Forgot your password? link on the login page.
+
+![](https://files.readme.io/ae862de-Screen_Shot_2023-07-12_at_15.21.50.png)
+
+After clicking, users will be directed to the below screen to enter their email address to reset their password.
+
+![](https://files.readme.io/4d2416b-Screen_Shot_2023-07-12_at_15.26.08.png)
+
+The reset password email is shown below. By clicking on the yellow Reset my password button, users will be directed to reset their password. After a successful reset, users will be free to login to the Bayou dashboard with their account.
+
+![](https://files.readme.io/aa64efe-Screen_Shot_2023-07-12_at_15.27.33.png)
+
+
+
+
+## External IDs in Bayou
+To avoid the need to add a new field in your database as part of your Bayou implementation, all API models come with an `external_id` field that can be used to save your identifier. The `external_id` can be used to retrieve, update or delete any object and can be a string of any format.
+
+If the object is created in your environment, just pass this identifier as an argument when you create it using Bayou's API. Objects created within Bayou's environment can be updated using the Bayou identifier to attach your `external_id` to them.
+
+The use of external IDs is totally optional.
+
+
+
+
+
+
+
+## Get Utility Bill
+
+
+#### URL Expired
+
+The URL for this request expired after 30 days.
+
+id
+
+string
+
+required
+
+Can be either Bayou's numeric ID or your own [identifier](https://docs.bayou.energy/reference/external-ids) for this bill preceded with `external_id:`
+
+# `` 200      Returns the utility bill
+
+object
+
+external\_id
+
+string
+
+Your own [identifier](https://docs.bayou.energy/reference/external-ids) for this bill (this field must be unique)
+
+id
+
+integer
+
+The ID of this bill
+
+status
+
+string
+
+The current status for this bill
+
+`unparsed` `not_supported` `locked` `unlocked`
+
+customer\_id
+
+integer
+
+The ID of the customer for which this bill was issued
+
+customer\_external\_id
+
+string
+
+Your own [identifier](https://docs.bayou.energy/reference/external-ids) for the customer for which this bill was issued
+
+billed\_on
+
+date
+
+The date this bill was issued by the utility
+
+utility
+
+string
+
+The utility company that issued this bill. See [Utility support](https://docs.bayou.energy/reference/utility-support) for more information
+
+account\_number
+
+string
+
+The utility account number as displayed on the bill
+
+outstanding\_balance
+
+integer
+
+Remaining balance from the previous billing cycle
+
+billing\_period\_from
+
+date
+
+The beginning of the billing period this bill covers
+
+billing\_period\_to
+
+date
+
+The end of the billing period this bill covers
+
+electricity\_consumption
+
+integer
+
+Quantity of electricity used this billing cycle, in watt-hours
+
+electricity\_amount
+
+integer
+
+The amount for all electricity-related charges on the bill, in cents
+
+delivery\_charge
+
+integer
+
+Bill electricity delivery charge amount, in cents
+
+supply\_charge
+
+integer
+
+Bill electricity supply charge amount, in cents
+
+community\_solar\_bill\_credit
+
+integer
+
+The community solar credit for this bill, in cents
+
+gas\_consumption\_unit
+
+string
+
+Unit used for describing all quantities of gas for this bill and its meters, can be therms or ccf
+
+gas\_consumption
+
+float
+
+Quantity of gas used this billing cycle, in therms
+
+gas\_amount
+
+integer
+
+The amount for all gas-related charges on the bill, in cents
+
+total\_amount
+
+string
+
+The total amount for the bill, including gas, in cents
+
+meters
+
+array of objects
+
+meters
+
+object
+
+id
+
+string
+
+The ID of this meter
+
+status
+
+string
+
+The current status for this meter
+
+`unparsed` `not_supported` `locked` `unlocked`
+
+type
+
+string
+
+The type of this meter
+
+`gas` `electric`
+
+billing\_period\_from
+
+date
+
+The start of the billing period for this meter
+
+billing\_period\_to
+
+date
+
+The end of the billing period for this meter
+
+consumption
+
+integer
+
+The consumption of this meter, in watt-hours or therms
+
+address
+
+object
+
+address object
+
+tariff
+
+string
+
+The tariff name for this meter
+
+additional\_attributes
+
+object
+
+Additional attributes for this meter
+
+additional\_attributes object
+
+file\_url
+
+url
+
+The URL at which the PDF for this bill can be fetched (valid for 15 minutes)
+
+# `` 404      Not Found
+
+object
+
+error\_type
+
+string
+
+The type of error
+
+error\_code
+
+string
+
+The error code
+
+error\_message
+
+string
+
+The error message
+
+docs\_url
+
+string
+
+A link to documentation providing more details about the error
+
+
+
+
+
+
+:
+
+Base URL
+
+https://bayou.energy/api/v2/bills/{id}
+
+```
+
+xxxxxxxxxx
+
+1curl --request GET \
+
+2     --url https://bayou.energy/api/v2/bills/id \
+
+3     --header 'accept: application/json'
+
+```
+
+Click `Try It!` to start a request and see the response here! Or choose an example:
+
+application/json
+
+`` 200`` 404Â -Â bill id invalid
+
+
+
+
+## Bayou Pricing Overview
+# Overview   [Skip link to Overview](https://docs.bayou.energy/docs/pricing-overview\#overview)
+
+The pricing for Bayouâ€™s Data product is $2 per meter per utility bill. Examples are given below to further explain the product pricing:
+
+| Utility bill scenario | Electric meters | Gas meters | Total meters on bill | Total cost |
+| --- | --- | --- | --- | --- |
+| Scenario 1 | 1 | 0 | 1 | $2 |
+| Scenario 2 | 0 | 1 | 1 | $2 |
+| Scenario 3 | 1 | 1 | 2 | $4 |
+| Scenario 4 | 3 | 2 | 5 | $10 |
+
+Companies can control what meters they have access to data from on every bill, called **unlocked data**.
+
+> ## ðŸ“˜  Across Bayou's production and staging environments, companies are only charged for the meter data they unlock, (called â€œBayou billsâ€ for simplicity below).
+
+| Utility bill scenario | Electric meters | Unlocked electric meters | Gas meters | Unlocked gas meters | Total meters on bill | Total Bayou bills | Total cost |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Scenario 1 | 1 | 1 | 0 | 0 | 1 | 1 | $2 |
+| Scenario 2 | 0 | 0 | 1 | 0 | 1 | 0 | $0 |
+| Scenario 3 | 1 | 1 | 1 | 0 | 2 | 1 | $2 |
+| Scenario 4 | 3 | 2 | 2 | 1 | 5 | 3 | $6 |
+
+# How Bayou invoices companies for product usage   [Skip link to How Bayou invoices companies for product usage](https://docs.bayou.energy/docs/pricing-overview\#how-bayou-invoices-companies-for-product-usage)
+
+Bayou typically sends invoices within the first seven calendar days of each calendar month for the previous month's usage. As an example, companies will receive an invoice from Bayou for their July usage on ~ August 7th. Each invoice will contain a detailed breakdown of all usage from the invoicing period.
+
+
+
+
+## Interval Data Overview
+# Interval data explained   [Skip link to Interval data explained](https://docs.bayou.energy/docs/interval-data\#interval-data-explained)
+
+Interval data is a snapshot of a customer's energy usage for a given time period. Data is provided in different granularities depending on the utility. Commonly provided granularities are 15 minute (usually the best case), hourly or daily intervals.
+
+JSON
+
+```rdmd-code lang-json theme-light
+
+{
+  "first_interval_discovered": "2021-11-01T00:00:00Z",
+  "last_interval_discovered": "2022-11-01T00:00:00Z",
+  "granularities": [\
+    15,\
+    30\
+  ],
+  "meters": [\
+    {\
+      "id": 12345,\
+      "intervals": [\
+        {\
+          "start": "2022-11-01T00:00:00Z",\
+          "end": "2022-11-01T00:15:00Z",\
+          "electricity_consumption": 20000,\
+          "net_electricity_consumption": 15000,\
+          "generated_electricity": 5000,\
+          "electricity_demand": 5000,\
+          "gas_consumption": 13.4\
+        }\
+      ]\
+    }\
+  ]
+}
+
+```
+
+> ## ðŸš§  Not all utilities provide intervals. After a customer connects their utility account, Bayou fetches all interval data available from the utility. [View interval data availability for more info.](https://docs.bayou.energy/docs/interval-data-availability)
+
+> ## ðŸ“˜  Bayou only provides interval data in the API - it isn't available today in the dashboard which only has bill data.
+
+
+
+
+## API Error Codes
+# API Error Codes   [Skip link to API Error Codes](https://docs.bayou.energy/docs/error-codes\#api-error-codes)
+
+## bill\_account\_number\_invalid   [Skip link to bill_account_number_invalid](https://docs.bayou.energy/docs/error-codes\#bill_account_number_invalid)
+
+**Developer makes a request for customer bills with an account\_number that doesnâ€™t exist in their workspace**
+
+Related to the following API calls:
+
+- [Retrieves the customer account bills](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 404
+{
+	"error_type": "invalid_request",
+	"error_code": "bill_account_number_invalid",
+	"error_message": "The account_number you provided in the request either does not exist for this customer or has no bills. This customer has the following account_numbers with bills <account_numbers>",
+	"docs_url": "https://docs.bayou.energy/docs/error-codes#bill_account_number_invalid"
+}
+
+```
+
+* * *
+
+## bill\_id\_invalid   [Skip link to bill_id_invalid](https://docs.bayou.energy/docs/error-codes\#bill_id_invalid)
+
+**Developer makes a request for a bill with an id that doesnâ€™t exist in their workspace**
+
+Related to the following API calls:
+
+- [Retrieves a specific utility bill](https://docs.bayou.energy/reference/get_bills-id)
+- [Updates a specific utility bill](https://docs.bayou.energy/reference/patch_bills-id)
+- [Unlocks a specific utility bill](https://docs.bayou.energy/reference/post_bills-id-unlock)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 404
+{
+	"error_type": â€œinvalid_requestâ€,
+	"error_code": â€œbill_id_invalidâ€,
+	â€error_messageâ€: â€œThe bill_id you provided in the request does not exist.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#bill_id_invalidâ€
+}
+
+```
+
+* * *
+
+## bill\_id\_invalid\_format   [Skip link to bill_id_invalid_format](https://docs.bayou.energy/docs/error-codes\#bill_id_invalid_format)
+
+**Developer makes a request for a bill with an id that is not a valid integer**
+
+Related to the following API calls:
+
+- [Retrieves a specific utility bill](https://docs.bayou.energy/reference/get_bills-id)
+- [Updates a specific utility bill](https://docs.bayou.energy/reference/patch_bills-id)
+- [Unlocks a specific utility bill](https://docs.bayou.energy/reference/post_bills-id-unlock)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œbill_id_invalid_formatâ€,
+	â€error_messageâ€: â€œThe bill_id you provided in the request is not a valid integer.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#bill_id_invalid_formatâ€
+}
+
+```
+
+* * *
+
+## bill\_meter\_id\_invalid   [Skip link to bill_meter_id_invalid](https://docs.bayou.energy/docs/error-codes\#bill_meter_id_invalid)
+
+**Developer makes a request for customer bills with a meter\_id that doesnâ€™t exist in their workspace**
+
+Related to the following API calls:
+
+- [Retrieves the customer account bills](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 404
+{
+	"error_type": "invalid_request",
+	"error_code": "bill_meter_id_invalid",
+	"error_message": "The meter_id you provided in the request either does not exist for this customer or has no bills. This customer has the following meters with bills <meter_ids>",
+	"docs_url": "https://docs.bayou.energy/docs/error-codes#bill_meter_id_invalid"
+}
+
+```
+
+* * *
+
+## customer\_address\_line\_1\_invalid   [Skip link to customer_address_line_1_invalid](https://docs.bayou.energy/docs/error-codes\#customer_address_line_1_invalid)
+
+**Developer creates or updates a customer with an invalid format for address\_line\_1**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œcustomer_address_line_1_invalidâ€,
+	â€error_messageâ€: â€œThe request you provided has the address_line_1 field improperly formatted. The address_line_1 field must be a string and no more than 30 characters.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_address_line_1_invalidâ€
+}
+
+```
+
+* * *
+
+## customer\_address\_line\_2\_invalid   [Skip link to customer_address_line_2_invalid](https://docs.bayou.energy/docs/error-codes\#customer_address_line_2_invalid)
+
+**Developer creates or updates a customer with an invalid format for address\_line\_2**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œcustomer_address_line_2_invalidâ€,
+	â€error_messageâ€: â€œThe request you provided has the address_line_2 field improperly formatted. The address_line_2 field must be a string and no more than 30 characters.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_address_line_2_invalidâ€
+}
+
+```
+
+* * *
+
+## customer\_city\_invalid   [Skip link to customer_city_invalid](https://docs.bayou.energy/docs/error-codes\#customer_city_invalid)
+
+**Developer creates or updates a customer with an invalid format for the city field**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œcustomer_city_invalidâ€,
+	â€error_messageâ€: â€œThe request you provided has the city field improperly formatted. The city field must be a string and no more than 30 characters.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_city_invalidâ€
+}
+
+```
+
+* * *
+
+## customer\_email\_invalid   [Skip link to customer_email_invalid](https://docs.bayou.energy/docs/error-codes\#customer_email_invalid)
+
+**Developer creates or updates a customer with an invalid email format**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œcustomer_email_invalidâ€,
+	â€error_messageâ€: â€œThe request you provided has the email field improperly formatted. An email must be a string, include an â€œ@â€ and â€œ.â€ symbol, and be no more than 320 charactersâ€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_email_invalidâ€
+}
+
+```
+
+* * *
+
+## customer\_first\_name\_invalid   [Skip link to customer_first_name_invalid](https://docs.bayou.energy/docs/error-codes\#customer_first_name_invalid)
+
+**Developer creates or updates a customer with an invalid format for the first name**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œcustomer_first_name_invalidâ€,
+	â€error_messageâ€: â€œThe request you provided has the first_name field improperly formatted. The first_name field must be a string and no more than 30 charactersâ€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_first_name_invalidâ€
+}
+
+```
+
+* * *
+
+## customer\_id\_invalid   [Skip link to customer_id_invalid](https://docs.bayou.energy/docs/error-codes\#customer_id_invalid)
+
+**Developer makes an API request with a customer\_id that doesnâ€™t exist in their workspace**
+
+Related to the following API calls:
+
+- [Retrieves a customer account](https://docs.bayou.energy/reference/get_customers-id)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+- [Uploads a new bill to parse it](https://docs.bayou.energy/reference/post_bills)
+- [Retrieves the customer account bills](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+- [Retrieves the list of intervals for that customer](https://docs.bayou.energy/reference/get_customers-customer-id-intervals)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 404
+{
+	"error_type": â€œinvalid_requestâ€,
+	"error_code": â€œcustomer_id_invalidâ€,
+	â€error_messageâ€: â€œThe customer_id you provided in the request does not exist.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_id_invalidâ€
+}
+
+```
+
+* * *
+
+## customer\_id\_invalid\_format   [Skip link to customer_id_invalid_format](https://docs.bayou.energy/docs/error-codes\#customer_id_invalid_format)
+
+**Developer makes an API request with a customer\_id that is not a valid integer**
+
+Related to the following API calls:
+
+- [Retrieves a customer account](https://docs.bayou.energy/reference/get_customers-id)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+- [Uploads a new bill to parse it](https://docs.bayou.energy/reference/post_bills)
+- [Retrieves the customer account bills](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+- [Retrieves the list of intervals for that customer](https://docs.bayou.energy/reference/get_customers-customer-id-intervals)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œcustomer_id_invalid_formatâ€,
+	â€error_messageâ€: â€œThe customer_id you provided in the request is not a valid integer.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_id_invalid_formatâ€
+}
+
+```
+
+* * *
+
+## customer\_last\_name\_invalid   [Skip link to customer_last_name_invalid](https://docs.bayou.energy/docs/error-codes\#customer_last_name_invalid)
+
+**Developer creates or updates a customer with an invalid format for the last name**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œcustomer_last_name_invalidâ€,
+	â€error_messageâ€: â€œThe request you provided has the last_name field improperly formatted. The last_name field must be a string and no more than 30 charactersâ€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_last_name_invalidâ€
+}
+
+```
+
+* * *
+
+## customer\_phone\_number\_invalid   [Skip link to customer_phone_number_invalid](https://docs.bayou.energy/docs/error-codes\#customer_phone_number_invalid)
+
+**Developer creates or updates a customer with an invalid format for the phone number**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œcustomer_phone_number_invalidâ€,
+	â€error_messageâ€: â€œThe request you provided has the phone_number field improperly formatted. The phone_number field must be a string and no more than 30 charactersâ€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_phone_number_invalidâ€
+}
+
+```
+
+* * *
+
+## customer\_state\_invalid   [Skip link to customer_state_invalid](https://docs.bayou.energy/docs/error-codes\#customer_state_invalid)
+
+**Developer creates or updates a customer with an invalid format for the state field**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œcustomer_state_invalidâ€,
+	â€error_messageâ€: â€œThe request you provided has the state field improperly formatted. The state field must be a two letter abbreviation in a string format or null. The state codes can be found here: https://docs.bayou.energy/reference/post_customersâ€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_state_invalidâ€
+}
+
+```
+
+* * *
+
+## customer\_zipcode\_invalid   [Skip link to customer_zipcode_invalid](https://docs.bayou.energy/docs/error-codes\#customer_zipcode_invalid)
+
+**Developer creates or updates a customer with an invalid format for the zip code**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œcustomer_zipcode_invalidâ€,
+	â€error_messageâ€: â€œThe request you provided has the zipcode field improperly formatted. The zipcode field must be a string and no more than 30 charactersâ€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#customer_zipcode_invalidâ€
+}
+
+```
+
+* * *
+
+## dates\_out\_of\_order   [Skip link to dates_out_of_order](https://docs.bayou.energy/docs/error-codes\#dates_out_of_order)
+
+**Developer makes a request for customer bills with an end date that comes before the start date**
+
+Related to the following API calls:
+
+- [Retrieves the customer account bills](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": "invalid_input",
+	"error_code": "dates_out_of_order",
+	"error_message": "The end date chronologically comes before the start date in your request."
+	"docs_url": "https://docs.bayou.energy/docs/error-codes#dates_out_of_order"
+}
+
+```
+
+* * *
+
+## end\_date\_invalid   [Skip link to end_date_invalid](https://docs.bayou.energy/docs/error-codes\#end_date_invalid)
+
+**Developer makes a request for customer bills with an invalid format for the end date**
+
+Related to the following API calls:
+
+- [Retrieves the customer account bills](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": "invalid_input",
+	"error_code": "end_date_invalid",
+	"error_message": "The end date is in an invalid format. An example of a valid format is 2022-11-01."
+	"docs_url": "https://docs.bayou.energy/docs/error-codes#end_date_invalid"
+}
+
+```
+
+* * *
+
+## end\_timestamp\_invalid   [Skip link to end_timestamp_invalid](https://docs.bayou.energy/docs/error-codes\#end_timestamp_invalid)
+
+**Developer makes a request for intervals with an invalid format for the end timestamp**
+
+Related to the following API calls:
+
+- [Retrieves the list of intervals for that customer](https://docs.bayou.energy/reference/get_customers-customer-id-intervals)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œend_timestamp_invalidâ€,
+	â€error_messageâ€: â€œThe end timestamp is in an invalid format. An example of a valid format is 2022-11-01T00:00:00Z.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#end_timestamp_invalidâ€
+}
+
+```
+
+* * *
+
+## external\_id\_invalid   [Skip link to external_id_invalid](https://docs.bayou.energy/docs/error-codes\#external_id_invalid)
+
+**Developer submits API call with external ID that doesnâ€™t exist in their workspace**
+
+Related to the following API calls:
+
+- [Retrieves a specific customer account](https://docs.bayou.energy/reference/get_customers-id)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+- [Retrieves a specific utility bill](https://docs.bayou.energy/reference/get_bills-id)
+- [Retrieves the customer account bills](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+- [Updates a specific utility bill](https://docs.bayou.energy/reference/patch_bills-id)
+- [Unlocks a specific utility bill](https://docs.bayou.energy/reference/post_bills-id-unlock)
+- [Retrieves the list of intervals for that customer](https://docs.bayou.energy/reference/get_customers-customer-id-intervals)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 404
+{
+	"error_type": â€œinvalid_requestâ€,
+	"error_code": â€œexternal_id_invalidâ€,
+	â€error_messageâ€: â€œThe external_id you provided in the request does not exist.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#external_id_invalidâ€
+}
+
+```
+
+* * *
+
+## external\_id\_invalid\_format   [Skip link to external_id_invalid_format](https://docs.bayou.energy/docs/error-codes\#external_id_invalid_format)
+
+**Developer submits API call with external ID that is not a valid integer.**
+
+Related to the following API calls:
+
+- [Creates a new customer](https://docs.bayou.energy/reference/post_customers)
+- [Retrieves a specific customer account](https://docs.bayou.energy/reference/get_customers-id)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+- [Uploads a new bill for parsing](https://docs.bayou.energy/reference/post_bills)
+- [Retrieves a specific utility bill](https://docs.bayou.energy/reference/get_bills-id)
+- [Retrieves the customer account bills](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+- [Updates a specific utility bill](https://docs.bayou.energy/reference/patch_bills-id)
+- [Unlocks a specific utility bill](https://docs.bayou.energy/reference/post_bills-id-unlock)
+- [Retrieves the list of intervals for that customer](https://docs.bayou.energy/reference/get_customers-customer-id-intervals)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œexternal_id_invalid_formatâ€,
+	â€error_messageâ€: â€œThe external_id you provided in the request is not a valid integer.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#external_id_invalid_formatâ€
+}
+
+```
+
+* * *
+
+## external\_id\_not\_unique   [Skip link to external_id_not_unique](https://docs.bayou.energy/docs/error-codes\#external_id_not_unique)
+
+**Developer submits API call with external ID that already exists**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+- [Uploads a new bill to parse it](https://docs.bayou.energy/reference/post_bills)
+- [Updates a specific utility bill](https://docs.bayou.energy/reference/patch_bills-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 409
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œexternal_id_not_uniqueâ€,
+	â€error_messageâ€: â€œThe external_id you provided in the request isnâ€™t unique and belongs to <insert other record it belongs to>.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#external_id_not_uniqueâ€
+}
+
+```
+
+* * *
+
+## interval\_meter\_id\_invalid   [Skip link to interval_meter_id_invalid](https://docs.bayou.energy/docs/error-codes\#interval_meter_id_invalid)
+
+**Developer makes a request for an interval with a meter\_id that doesnâ€™t exist in their workspace**
+
+Related to the following API calls:
+
+- [Retrieves the list of intervals for that customer](https://docs.bayou.energy/reference/get_customers-customer-id-intervals)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 404
+{
+	"error_type": â€œinvalid_requestâ€,
+	"error_code": â€œinterval_meter_id_invalidâ€,
+	â€error_messageâ€: â€œThe meter_id you provided in the request either does not exist for this customer or has no intervals. This customer has the following meters with interval data: <meter_ids>â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#interval_meter_id_invalidâ€
+}
+
+```
+
+* * *
+
+## limit\_invalid   [Skip link to limit_invalid](https://docs.bayou.energy/docs/error-codes\#limit_invalid)
+
+**Developer makes a request for customer bills with an invalid format for the bill limit**
+
+Related to the following API calls:
+
+- [Retrieves the customer account bills](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": "invalid_input",
+	"error_code": "limit_invalid",
+	"error_message": "The request you provided has the limit field improperly formatted. The limit must be an integer formatted as a string (ie 1, 2, 12, 24)",
+	"docs_url": "https://docs.bayou.energy/docs/error-codes#limit_invalid"
+}
+
+```
+
+* * *
+
+## method\_not\_allowed   [Skip link to method_not_allowed](https://docs.bayou.energy/docs/error-codes\#method_not_allowed)
+
+**Developer makes an API request ( [https://bayou.energy/api/](https://bayou.energy/api/) <rest\_of\_request>) with a valid url but the specific method is not allowed**
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 405
+{
+	"error_type": "invalid_request",
+	"error_code": "method_not_allowed",
+	"error_message": "The method <request_method> is not allowed for this endpoint. The allowed methods are <allowed_methods>",
+	"docs_url": "https://docs.bayou.energy/docs/error-codes#method_not_allowed"
+}
+
+```
+
+* * *
+
+## no\_file\_provided   [Skip link to no_file_provided](https://docs.bayou.energy/docs/error-codes\#no_file_provided)
+
+**Developer uploads a bill but doesnâ€™t include any file**
+
+Related to the following API calls:
+
+- [Uploads a new bill to parse it](https://docs.bayou.energy/reference/post_bills)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œno_file_providedâ€,
+	â€error_messageâ€: â€œNo file was provided in your request to post a bill.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#no_file_providedâ€
+}
+
+```
+
+* * *
+
+## request\_path\_invalid   [Skip link to request_path_invalid](https://docs.bayou.energy/docs/error-codes\#request_path_invalid)
+
+**Developer makes an API request ( [https://bayou.energy/api/](https://bayou.energy/api/) <rest\_of\_request>) with a url that doesnâ€™t match any of our existing routes**
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 404
+{
+	"error_type": â€œinvalid_requestâ€,
+	"error_code": â€œrequest_path_invalidâ€,
+	â€error_messageâ€: â€œThe requested route cannot be found. Refer to Bayouâ€™s documentation for available API requests.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#request_path_invalidâ€
+}
+
+```
+
+* * *
+
+## start\_date\_invalid   [Skip link to start_date_invalid](https://docs.bayou.energy/docs/error-codes\#start_date_invalid)
+
+**Developer makes a request for customer bills with an invalid format for the start date**
+
+Related to the following API calls:
+
+- [Retrieves the customer account bills](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": "invalid_input",
+	"error_code": "end_date_invalid",
+	"error_message": "The start date is in an invalid format. An example of a valid format is 2022-11-01.",
+	"docs_url": "https://docs.bayou.energy/docs/error-codes#start_date_invalid"
+}
+
+```
+
+* * *
+
+## start\_timestamp\_invalid   [Skip link to start_timestamp_invalid](https://docs.bayou.energy/docs/error-codes\#start_timestamp_invalid)
+
+**Developer makes a request for intervals with an invalid format for the start timestamp**
+
+Related to the following API calls:
+
+- [Retrieves the list of intervals for that customer](https://docs.bayou.energy/reference/get_customers-customer-id-intervals)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œstart_timestamp_invalidâ€,
+	â€error_messageâ€: â€œThe start timestamp is in an invalid format. An example of a valid format is 2022-11-01T00:00:00Z.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#start_timestamp_invalidâ€
+}
+
+```
+
+* * *
+
+## timestamps\_out\_of\_order   [Skip link to timestamps_out_of_order](https://docs.bayou.energy/docs/error-codes\#timestamps_out_of_order)
+
+**Developer makes a request for intervals with an end timestamp that comes before the start timestamp**
+
+Related to the following API calls:
+
+- [Retrieves the list of intervals for that customer](https://docs.bayou.energy/reference/get_customers-customer-id-intervals)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œtimestamps_out_of_orderâ€,
+	â€error_messageâ€: â€œThe end timestamp chronologically comes before the start timestamp in your request.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#timestamps_out_of_orderâ€
+}
+
+```
+
+* * *
+
+## unsupported\_file\_format   [Skip link to unsupported_file_format](https://docs.bayou.energy/docs/error-codes\#unsupported_file_format)
+
+**Developer uploads a bill but the file type isnâ€™t supported**
+
+Related to the following API calls:
+
+- [Uploads a new bill to parse it](https://docs.bayou.energy/reference/post_bills)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 415
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œunsupported_file_formatâ€,
+	â€error_messageâ€: â€œThe file you provided is not in a format we support. PDFâ€™s are the only format supported right now.â€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#unsupported_file_formatâ€
+}
+
+```
+
+* * *
+
+## utility\_code\_input\_invalid   [Skip link to utility_code_input_invalid](https://docs.bayou.energy/docs/error-codes\#utility_code_input_invalid)
+
+**Developer creates or updates a customer with an invalid utility code**
+
+Related to the following API calls:
+
+- [Creates a new customer account](https://docs.bayou.energy/reference/post_customers)
+- [Updates a customer account](https://docs.bayou.energy/reference/patch_customers-id)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œutility_code_input_invalidâ€,
+	â€error_messageâ€: â€œThe utility code you provided in the request is invalid. Did you mean <alternate_valid_utility_code>? A full list of utility codes can be found here: https://docs.bayou.energy/reference/utility-supportâ€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#utility_code_input_invalidâ€
+}
+
+```
+
+* * *
+
+## utility\_lacks\_intervals   [Skip link to utility_lacks_intervals](https://docs.bayou.energy/docs/error-codes\#utility_lacks_intervals)
+
+**Developer makes a request for intervals with a utility that doesnâ€™t have interval data**
+
+Related to the following API calls:
+
+- [Retrieves the list of intervals for that customer](https://docs.bayou.energy/reference/get_customers-customer-id-intervals)
+
+json
+
+```rdmd-code lang-Text theme-light
+
+http code 400
+{
+	"error_type": â€œinvalid_inputâ€,
+	"error_code": â€œutility_lacks_intervalsâ€,
+	â€error_messageâ€: â€œThis customerâ€™s utility doesnâ€™t have interval data. View utility support here: https://docs.bayou.energy/reference/utility-supportâ€,
+	â€docs_urlâ€: â€œhttps://docs.bayou.energy/docs/error-codes#utility_lacks_intervalsâ€
+}
+
+```
+
+
+
+
+## Patch Utility Bills
+
+
+#### URL Expired
+
+The URL for this request expired after 30 days.
+
+id
+
+string
+
+required
+
+Can be either Bayou's numeric ID or your own [identifier](https://docs.bayou.energy/reference/external-ids) for this bill preceded with `external_id:`
+
+external\_id
+
+string
+
+Your own [identifier](https://docs.bayou.energy/reference/external-ids) for this bill (this field must be unique)
+
+# `` 200      Returns the utility bill
+
+object
+
+external\_id
+
+string
+
+Your own [identifier](https://docs.bayou.energy/reference/external-ids) for this bill (this field must be unique)
+
+id
+
+integer
+
+The ID of this bill
+
+status
+
+string
+
+The current status for this bill
+
+`unparsed` `not_supported` `locked` `unlocked`
+
+customer\_id
+
+integer
+
+The ID of the customer for which this bill was issued
+
+customer\_external\_id
+
+string
+
+Your own [identifier](https://docs.bayou.energy/reference/external-ids) for the customer for which this bill was issued
+
+billed\_on
+
+date
+
+The date this bill was issued by the utility
+
+utility
+
+string
+
+The utility company that issued this bill. See [Utility support](https://docs.bayou.energy/reference/utility-support) for more information
+
+account\_number
+
+string
+
+The utility account number as displayed on the bill
+
+outstanding\_balance
+
+integer
+
+Remaining balance from the previous billing cycle
+
+billing\_period\_from
+
+date
+
+The beginning of the billing period this bill covers
+
+billing\_period\_to
+
+date
+
+The end of the billing period this bill covers
+
+electricity\_consumption
+
+integer
+
+Quantity of electricity used this billing cycle, in watt-hours
+
+electricity\_amount
+
+integer
+
+The amount for all electricity-related charges on the bill, in cents
+
+delivery\_charge
+
+integer
+
+Bill electricity delivery charge amount, in cents
+
+supply\_charge
+
+integer
+
+Bill electricity supply charge amount, in cents
+
+community\_solar\_bill\_credit
+
+integer
+
+The community solar credit for this bill, in cents
+
+gas\_consumption\_unit
+
+string
+
+Unit used for describing all quantities of gas for this bill and its meters, can be therms or ccf
+
+gas\_consumption
+
+float
+
+Quantity of gas used this billing cycle, in therms
+
+gas\_amount
+
+integer
+
+The amount for all gas-related charges on the bill, in cents
+
+total\_amount
+
+string
+
+The total amount for the bill, including gas, in cents
+
+meters
+
+array of objects
+
+meters
+
+object
+
+id
+
+string
+
+The ID of this meter
+
+status
+
+string
+
+The current status for this meter
+
+`unparsed` `not_supported` `locked` `unlocked`
+
+type
+
+string
+
+The type of this meter
+
+`gas` `electric`
+
+billing\_period\_from
+
+date
+
+The start of the billing period for this meter
+
+billing\_period\_to
+
+date
+
+The end of the billing period for this meter
+
+consumption
+
+integer
+
+The consumption of this meter, in watt-hours or therms
+
+address
+
+object
+
+address object
+
+tariff
+
+string
+
+The tariff name for this meter
+
+additional\_attributes
+
+object
+
+Additional attributes for this meter
+
+additional\_attributes object
+
+file\_url
+
+url
+
+The URL at which the PDF for this bill can be fetched (valid for 15 minutes)
+
+# `` 404      Not Found
+
+object
+
+error\_type
+
+string
+
+The type of error
+
+error\_code
+
+string
+
+The error code
+
+error\_message
+
+string
+
+The error message
+
+docs\_url
+
+string
+
+A link to documentation providing more details about the error
+
+# `` 409      Conflict
+
+object
+
+error\_type
+
+string
+
+The type of error
+
+error\_code
+
+string
+
+The error code
+
+error\_message
+
+string
+
+The error message
+
+docs\_url
+
+string
+
+A link to documentation providing more details about the error
+
+
+
+
+
+
+:
+
+Base URL
+
+https://bayou.energy/api/v2/bills/{id}
+
+```
+
+xxxxxxxxxx
+
+1curl --request PATCH \
+
+2     --url https://bayou.energy/api/v2/bills/id \
+
+3     --header 'accept: application/json' \
+
+4     --header 'content-type: application/json'
+
+```
+
+Click `Try It!` to start a request and see the response here! Or choose an example:
+
+application/json
+
+`` 200`` 404Â -Â bill id invalid`` 404Â -Â external id invalid`` 409
+
+
+
+
+## Customer Authentication Webhook
+To programmatically determine when your customer has authenticated their utility account using Bayou's form or embedded component, use the customer\_has\_filled\_credentials webhook.
+
+JSON
+
+```rdmd-code lang-json theme-light
+
+{
+    "event": "customer_has_filled_credentials",
+    "object": {
+        "customer_id": 12345,
+        "customer_external_id": "MSCOTT123",
+        "utility": "con_edison",
+        "utility_data_velocity": "instant",
+        "has_filled_credentials": true,
+        "has_filled_credentials_on": "2022-07-01T14:05:00Z"
+    }
+}
+
+```
+
+The attribute "has\_filled\_credentials" being set to true denotes the customer authentication. For customers that require multi-factor authentication (MFA) this will only be true if the customer has completed the MFA challenge.
+
+The "utility\_data\_velocity" attribute indicates whether the data received for this customer will be instant.
+
+
+
+
+## Bayou Energy Changelog
+# [April 2025 Update](https://docs.bayou.energy/changelog/bayou-april-2025-utility-api-update)
+
+17 days agoby James Gordey
+
+# Overview   [Skip link to Overview](https://docs.bayou.energy/changelog\#overview)
+
+# [July 2024 Update](https://docs.bayou.energy/changelog/july-2024-update)
+
+9 months agoby James Gordey
+
+# Overview   [Skip link to Overview](https://docs.bayou.energy/changelog\#overview)
+
+# [June 2024 Update](https://docs.bayou.energy/changelog/june-2024-update)
+
+10 months agoby James Gordey
+
+# Overview   [Skip link to Overview](https://docs.bayou.energy/changelog\#overview)
+
+added
+
+# [May 2024 Update](https://docs.bayou.energy/changelog/may-2024-update)
+
+11 months agoby James Gordey
+
+# Overview   [Skip link to Overview](https://docs.bayou.energy/changelog\#overview)
+
+# [Welcome to Bayou Energy](https://docs.bayou.energy/changelog/welcome-to-bayou-energy)
+
+over 2 years agoby Joris Van Hecke
+
+Welcome to the developer hub and documentation for Bayou Energy!
+
+## Utility Bill Data
+Bayou provides electric and gas data from a customerâ€™s utility bills **instantly**, defined as within 60 seconds or less. The data provided includes:
+
+- **Dates**: The date the bill was issued by the utility and also the start and end dates for each meterâ€™s consumption on the bill
+- **Electric and gas consumption**: Bill and meter level consumption of electricity (in watt-hours) and gas (therms or CCF). Meter level consumption quantities are checked against bill totals for both electricity and gas to ensure data quality.
+- **Financial amounts**: The total amount due on a bill as well the outstanding balance from before the bill, electricity and gas charges. Electricity sub charges today include delivery, supply and community solar bill credits.
+- **Account numbers, meters and tariffs**: The utility account number and all meter IDâ€™s on a bill. A meterâ€™s tariff name is included in addition to meter consumption and its dates of consumption.
+- **Bill PDF**: A link to the PDF of the utility bill
+
+View more detail in the /bills endpoint section of the API reference: [https://docs.bayou.energy/reference/bills-1](https://docs.bayou.energy/reference/bills-1)
+
+Here is a sample response from the [get bill by id endpoint](https://docs.bayou.energy/reference/get_bills-id):
+
+json
+
+```rdmd-code lang-Text theme-light
+{
+  "external_id": "BILL_123",
+  "id": 12345,
+  "status": "unlocked",
+  "customer_id": 12345,
+  "customer_external_id": "MSCOTT123",
+  "billed_on": "2022-08-01",
+  "outstanding_balance": 1200,
+  "billing_period_from": "2022-07-01",
+  "billing_period_to": "2022-07-31",
+  "utility": "con_edison",
+  "account_number": 123456,
+  "electricity_consumption": 900,
+  "electricity_amount": 9060,
+  "delivery_charge": 5060,
+  "supply_charge": 4000,
+  "community_solar_bill_credit": -6440,
+  "gas_consumption": 90,
+  "gas_consumption_unit": "therms",
+  "gas_amount": 2940,
+  "total_amount": 12000,
+  "meters": [\
+    {\
+      "id": "XYZ12345",\
+      "type": "gas",\
+      "billing_period_from": "2022-07-01",\
+      "billing_period_to": "2022-07-31",\
+      "consumption": 12345,\
+      "tariff": "123 Residential",\
+      "address": {\
+        "line_1": "123 Main St",\
+        "line_2": "Apt 1",\
+        "city": "New York",\
+        "state": "NY",\
+        "postal_code": 10001,\
+        "postal_code_suffix": 1234,\
+        "country": "US"\
+      },\
+      "additional_attributes": {\
+        "electric_choice_id": 123456789\
+      }\
+    }\
+  ],
+  "file_url": "https://private.bayou.energy/bills/12345.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=XYZ&X-Amz-Date=20220701T000000Z&X-Amz-Expires=1800&X-Amz-Signature=ABCEF0123456&X-Amz-SignedHeaders=host"
+}
+
+```
+
+> ## ðŸ“˜  Note: The additional attributes field will vary by utility. It provides additional unique identifiers that are utility specific. For a list of utilities and their specific additional\_attributes, view [utility specific notes](https://docs.bayou.energy/docs/utility-specific-notes)
+
+
+
+* * *
+
+- [Bill data availability](https://docs.bayou.energy/docs/bill-data-availability)
+
+## Bayou Embedded Component
+You can embed Bayouâ€™s customer onboarding form on your website using the Bayou JS library.
+
+# Customize the appearance of the embedded component   [Skip link to Customize the appearance of the embedded component](https://docs.bayou.energy/docs/bayou-embedded-component\#customize-the-appearance-of-the-embedded-component)
+
+The logo and button color of the customer experience can be customized within the settings page of Bayou's dashboard.
+
+![](https://files.readme.io/a665fe6-Screenshot_2024-08-16_at_11.26.50.png)
+
+- Company name: If you haven't already, modify the Company name to what you would want the customer to see when connecting their utility account
+- Company color: The company color allows you to customize the button color within the form. Input your color's hex number or pick from the available options.
+- Company logo: This will replace the Bayou logo at the top of the form with your own logo. JPG and PNG file types are supported.
+
+# Implementing the embedded component   [Skip link to Implementing the embedded component](https://docs.bayou.energy/docs/bayou-embedded-component\#implementing-the-embedded-component)
+
+To include and initialize the library, add the following line to your pages:
+
+Staging environmentProduction environment
+
+```rdmd-code lang-html theme-light
+<script src="https://js.staging.bayou.energy/v1"></script>
+
+```
+
+```rdmd-code lang-html theme-light
+<script src="https://js.bayou.energy/v1"></script>
+
+```
+
+> ## ðŸ“˜  This is version 1 of the embedded component, reflected by v1 in the above code. Do not confuse this with v2.0 and v1.0 of Bayou's API.
+
+Next, in your JavaScript code, add the following lines of code:
+
+ProductionStaging
+
+```rdmd-code lang-javascript theme-light
+Bayou.loadOnboardingForm(
+ document.getElementById("\<your_element>"),
+"\<your_company_id>", // Found in your company settings: https://bayou.energy/dashboard/settings
+"\<onboarding_token>", // Generated using this API call: https://docs.bayou.energy/v2.0/reference/get_customers-id
+ (event) => {
+   if(event.type === "customerHasAuthenticated") {
+     alert("Customer has authenticated")
+   }
+   else if(event.type === "customerEnteredInvalidCredentials") {
+     alert("Customer entered invalid credentials")
+   }
+   else if(event.type === "customerEnteredInvalidMFAChallenge") {
+     alert("Customer entered invalid MFA challenge")
+   }
+ }
+ )
+
+```
+
+```rdmd-code lang-javascript theme-light
+Bayou.loadOnboardingForm(
+ document.getElementById("\<your_element>"),
+"\<your_company_id>", // Found in your company settings: https://staging.bayou.energy/dashboard/settings
+"\<onboarding_token>", // Generated using this API call: https://docs.bayou.energy/v2.0/reference/get_customers-id
+ (event) => {
+   if(event.type === "customerHasAuthenticated") {
+     alert("Customer has authenticated")
+   }
+   else if(event.type === "customerEnteredInvalidCredentials") {
+     alert("Customer entered invalid credentials")
+   }
+   else if(event.type === "customerEnteredInvalidMFAChallenge") {
+     alert("Customer entered invalid MFA challenge")
+   }
+ }
+ )
+
+```
+
+> ## ðŸ“˜  In the above JavaScript code snipped, replace
+>
+> <your\_element> by the identifier of the HTML element which will contain the onboarding form
+>
+> <your\_company\_id> by the ID of your company, which you can find on the Settings page of your Bayou Dashboard
+>
+> <onboarding\_token> by the onboarding token for the current customer, which you can generate using the /customers/{id} API request.
+
+The last parameter of the function is a callback function which will be called once your customer has reached the end of the onboarding form, with one of the following objects passed as its first parameter:
+
+```rdmd-code lang- theme-light
+{ type: "customerHasAuthenticated" },
+{ type: "customerEnteredInvalidCredentials"},
+{ type: "customerEnteredInvalidMFAChallenge"},
+{ type: "bayouCustomerFinishedOnboarding" }
+
+```
+
+> ## ðŸš§  Note on bayouCustomerFinishedOnboarding
+>
+> Bayou still supports a now deprecated event type "bayouCustomerFinishedOnboarding", but it is not recommended to use this type. It functionally works the same as "customerHasAuthenticated"
+
+We advise you to check the type of the event as we might add more types in the future. The event is functionally identical to the `customer_has_filled_credentials` webhook.
+
+# Error Handling   [Skip link to Error Handling](https://docs.bayou.energy/docs/bayou-embedded-component\#error-handling)
+
+The embedded component now throws detailed errors when invalid parameters are provided:
+
+- `InvalidElementError`: The provided element is not a valid HTML element.
+- `CompanyIdMissingError`: The companyId is missing.
+- `CompanyIdNotAnInteger`: The companyId is not a number.
+- `OnboardingTokenMissingError`: The onboardingToken is missing.
+- `InvalidOnboardingTokenError`: The onboardingToken is not a valid string or appears to be an onboarding link.
+- `InvalidOnboardingTokenFormatError`: The onboardingToken does not match the expected format.
+
+Ensure your implementation correctly handles these errors to prevent unexpected failures.
+
+> ## ðŸš§  If you are testing the embedded component in your local environment, remember that not all browsers will simply open a local file rendering the component.
+>
+> Firefox should open and render the component locally without any issues but Safari and Chrome may require a local url: (for example: http://localhost:XXXX or http://localhost:8000
+
+
+
+* * *
+
+## Utility Meter Attributes
+## AES Indiana   [Skip link to AES Indiana](https://docs.bayou.energy/docs/utility-specific-notes\#aes-indiana)
+
+Some intervals have a meter value "All meters for customer account", meaning that the interval data is the sum of all meters for the customer's account number.
+
+## Baltimore Gas and Electric   [Skip link to Baltimore Gas and Electric](https://docs.bayou.energy/docs/utility-specific-notes\#baltimore-gas-and-electric)
+
+Electric meters have an `additional_attribute` field `electric_choice_id`
+
+## Commonwealth Edison   [Skip link to Commonwealth Edison](https://docs.bayou.energy/docs/utility-specific-notes\#commonwealth-edison)
+
+Electric meters have an `additional_attribute` field `electric_choice_id`
+
+## Delmarva Power   [Skip link to Delmarva Power](https://docs.bayou.energy/docs/utility-specific-notes\#delmarva-power)
+
+Meters have an `additional_attribute` field `service_number`
+
+## NYSEG   [Skip link to NYSEG](https://docs.bayou.energy/docs/utility-specific-notes\#nyseg)
+
+Meters have an `additional_attribute` field `pod_id`
+
+## Pacific Gas and Electric   [Skip link to Pacific Gas and Electric](https://docs.bayou.energy/docs/utility-specific-notes\#pacific-gas-and-electric)
+
+Meters have an `additional_attribute` field `service_id`
+
+## Pepco   [Skip link to Pepco](https://docs.bayou.energy/docs/utility-specific-notes\#pepco)
+
+Meters have an `additional_attribute` field `service_number`
+
+## Potomac Edison   [Skip link to Potomac Edison](https://docs.bayou.energy/docs/utility-specific-notes\#potomac-edison)
+
+Meters have an `additional_attribute` field `customer_number`
+
+## Southern California Edison   [Skip link to Southern California Edison](https://docs.bayou.energy/docs/utility-specific-notes\#southern-california-edison)
+
+Meters have an `additional_attribute` field `service_id`
+
+## Xcel Energy   [Skip link to Xcel Energy](https://docs.bayou.energy/docs/utility-specific-notes\#xcel-energy)
+
+Meters have an `additional_attribute` field `premises_number`
+
+
+
+* * *
+
+## Utility Data Unlocking
+After a customer has established their utility connection, Bayou gathers all customer data made available by the utility. By default that data will be unlocked for access by a company and metered for monthly invoicing from Bayou to the company using Bayou's product.
+
+> ## ðŸ‘‰  Bayou only charges for unlocked data across both production and staging environments.
+
+Data unlocking can be controlled:
+
+- **Today**
+  - [At the company level across all end customer bills](https://docs.bayou.energy/docs/controlling-unlocked-data#company-settings-for-unlocking-data)
+  - For each individual end customer bill
+- **Coming soon:**
+  - At the individual meter level on each end customer bill
+
+**Until the ability to unlock data at the individual meter level is implemented in Bayouâ€™s product:**
+
+- Bayou makes an assumption on a company's meter preference (electric, gas or both meter types) based on discussion with an individual company.
+- Based on this assumption (which is communicated when a first invoice is sent to a company) Bayou only charges a company based on their meter preference.
+- As an example, if a company's meter preference is electric meter data only, then the company will not be charged for any gas meter data.
+
+A company can change their meter preference at any time by emailing [support@bayou.energy](mailto:support@bayou.energy).
+
+
+
+* * *
+
+## Unlocking Data Settings
+# Company settings for unlocking data   [Skip link to Company settings for unlocking data](https://docs.bayou.energy/docs/controlling-unlocked-data\#company-settings-for-unlocking-data)
+
+Users can specify their default policy for what data is unlocked for all newly created customers in the Customer data section of settings in the dashboard.
+
+![](https://files.readme.io/679731c-Screen_Shot_2023-01-25_at_15.46.55.png)
+
+- **What historical data is fetched by default for new customers.** Options are:
+
+  - All (all historical data made available by the utility will be fetched)
+  - A predefined time period measured in months. Example (1 month, 12 months, 24 months)
+  - None (No historical data made available by the utility will be fetched)
+- **Continuous fetching of data for existing customers**:
+
+  - Enable: On an ongoing basis, all new customer data will be unlocked by default
+    - This means as a customer receives a new utility bill and corresponding data, that data will be fetched and unlocked
+  - Disable continuous data: No new customer data will be unlocked on an ongoing basis by default
+
+# Data provided for locked bills   [Skip link to Data provided for locked bills](https://docs.bayou.energy/docs/controlling-unlocked-data\#data-provided-for-locked-bills)
+
+For locked data, the below information will be provided:
+
+- Unique identifier
+  - Bill id
+  - Bill external id
+  - Customer id
+  - Customer external id
+- Utility
+- Utility account number
+- Time stamps:
+  - Billed on
+  - Billing period from
+  - Billing period to
+
+Here's an example locked bill object:
+
+```rdmd-code lang- theme-light
+{
+  "external_id": null,
+  "id": 13991,
+  "customer_id": 993,
+  "customer_external_id": null,
+  "billed_on": "2022-12-29",
+  "utility": "seattle_city_light",
+  "account_number": "43576123213218",
+  "billing_period_from": "2022-10-27",
+  "billing_period_to": "2022-12-29",
+  "meters": [\
+    {\
+      "id": "221323123213",\
+      "type": "electric",\
+      "tariff": "Unspecified",\
+      "billing_period_to": "2022-12-29",\
+      "billing_period_from": "2022-10-27"\
+    }\
+  ]
+}
+
+```
+
+# Unlocking data from an individual bill object   [Skip link to Unlocking data from an individual bill object](https://docs.bayou.energy/docs/controlling-unlocked-data\#unlocking-data-from-an-individual-bill-object)
+
+At any time the default company settings for unlocked data can be over-ridden for an individual bill object by its unique identifier.
+
+## Via API   [Skip link to Via API](https://docs.bayou.energy/docs/controlling-unlocked-data\#via-api)
+
+[This API call outlines how to unlock an individual bill.](https://docs.bayou.energy/reference/post_bills-id-unlock)
+
+## Via the Bayou dashboard (no code)   [Skip link to Via the Bayou dashboard (no code)](https://docs.bayou.energy/docs/controlling-unlocked-data\#via-the-bayou-dashboard-no-code)
+
+![This customer has two bills already unlocked (13988 and 13989) and four bills that are locked (13990, 13991, 13992, 13993).](https://files.readme.io/40198e9-Screen_Shot_2023-07-12_at_17.28.42.png)
+
+This customer has two bills already unlocked (13988 and 13989) and four bills that are locked (13990, 13991, 13992 and 13993).
+
+**To unlock any given bill, the user can simply click the gray "Unlock this bill" button.**
+
+
+
+* * *
+
+## Unlock Bills API
+
+
+:
+
+Base URL
+
+https://bayou.energy/api/v2/bills/{id}/unlock
+
+Click `Try It!` to start a request and see the response here!
+
+## Utility Bill Data
+# Initial data availability   [Skip link to Initial data availability](https://docs.bayou.energy/docs/bill-data-availability\#initial-data-availability)
+
+After a customer connects their utility account, Bayou fetches all utility bill data available. After all fetched bills are available, the [bills\_ready](https://docs.bayou.energy/reference/event-informing-that-the-initial-bill-discovery-is-done-for-a-specific-customer) webhook is sent. Individual bills will be sent in the [new\_bill](https://docs.bayou.energy/reference/event-informing-that-a-new-bill-was-discovered-webhook) or [new\_unparsed\_bill](https://docs.bayou.energy/reference/new_bill_status_unparsed) webhooks.
+
+For convenience within the webhook body, all bill data is categorized:
+
+1. bills\_parsed: All parsed bills available
+2. bills\_unparsed: Bills that were fetched but haven't yet been parsed by Bayou.
+3. available\_data: Provides a hierarchical summary of the account numbers, meters and corresponding time periods from which bill data is available for the customer. Each meter also shows its type of service (electric or gas).
+
+JSON
+
+```rdmd-code lang-json theme-light
+{
+  "event": "bills_ready",
+  "object": {
+    "id": 12345,
+    "external_id": "MSCOTT123",
+    "bills_parsed": [\
+			{\
+        "external_id": "BILL_123",\
+        "id": 12345,\
+        "status": "unlocked",\
+        "customer_id": 12345,\
+        "customer_external_id": "MSCOTT123",\
+        "billed_on": "2022-08-01",\
+        "past_due": false,\
+        "outstanding_balance": 1200,\
+        "billing_period_from": "2022-07-01",\
+        "billing_period_to": "2022-07-31",\
+        "utility": "con_edison",\
+        "account_number": 123456,\
+        "electricity_consumption": 900,\
+        "electricity_amount": 9060,\
+        "delivery_charge": 5060,\
+        "supply_charge": 4000,\
+        "community_solar_bill_credit": -6440,\
+        "gas_consumption": 90,\
+        "gas_consumption_unit": "therms",\
+        "gas_amount": 2940,\
+        "total_amount": 12000,\
+        "meters": [\
+          {\
+            "id": "XYZ12345",\
+            "type": "gas",\
+            "billing_period_from": "2022-07-01",\
+            "billing_period_to": "2022-07-31",\
+            "consumption": 12345,\
+            "tariff": "123 Residential"\
+          }\
+        ],\
+        "file_url": "https://private.bayou.energy/bills/12345.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=XYZ&X-Amz-Date=20220701T000000Z&X-Amz-Expires=1800&X-Amz-Signature=ABCEF0123456&X-Amz-SignedHeaders=host"\
+      }\
+    ],
+    "bills_unparsed": [\
+      {\
+        "id": 12346\
+      }\
+    ],
+    "available_data": {
+      "account_numbers": [\
+        {\
+          "id": "MSCOTT123",\
+          "meters": [\
+            {\
+              "id": "XYZ12345",\
+              "type": "gas",\
+              "periods": [\
+                {\
+                  "period_from": "2022-07-01",\
+                  "period_to": "2022-07-31"\
+                }\
+              ]\
+            }\
+          ]\
+        }\
+      ]
+    }
+  }
+}
+
+```
+
+# Bill data updates   [Skip link to Bill data updates](https://docs.bayou.energy/docs/bill-data-availability\#bill-data-updates)
+
+After initial connection, Bayou will provide webhooks for any newly discovered bills in the [new\_bill](https://docs.bayou.energy/reference/event-informing-that-a-new-bill-was-discovered-webhook) or [new\_unparsed\_bill](https://docs.bayou.energy/reference/new_bill_status_unparsed) webhooks. Any updates to existing bills will be sent via the [updated\_bill webhook](https://docs.bayou.energy/reference/event-informing-that-a-new-bill-was-updated-webhook).
+
+
+
+* * *
+
+## Interval Data Overview
+# Interval data explained   [Skip link to Interval data explained](https://docs.bayou.energy/docs/interval-data-availability\#interval-data-explained)
+
+Interval data is a snapshot of a customer's energy usage for a given time period. Data is provided in different granularities depending on the utility. Commonly provided granularities are 15 minute (usually the best case), hourly or daily intervals.
+
+JSON
+
+```rdmd-code lang-json theme-light
+{
+  "first_interval_discovered": "2021-11-01T00:00:00Z",
+  "last_interval_discovered": "2022-11-01T00:00:00Z",
+  "granularities": [\
+    15,\
+    30\
+  ],
+  "meters": [\
+    {\
+      "id": 12345,\
+      "intervals": [\
+        {\
+          "start": "2022-11-01T00:00:00Z",\
+          "end": "2022-11-01T00:15:00Z",\
+          "electricity_consumption": 20000,\
+          "net_electricity_consumption": 15000,\
+          "generated_electricity": 5000,\
+          "electricity_demand": 5000,\
+          "gas_consumption": 13.4\
+        }\
+      ]\
+    }\
+  ]
+}
+
+```
+
+# Initial data availability   [Skip link to Initial data availability](https://docs.bayou.energy/docs/interval-data-availability\#initial-data-availability)
+
+While not all utilities provide intervals, after a customer connects their utility account, Bayou fetches all interval data available from the utility. After all fetched intervals are available, the [intervals\_ready](https://docs.bayou.energy/reference/event-informing-that-the-initial-interval-discovery-is-done-for-a-specific-customer) webhook is sent.
+
+> ## ðŸ“˜  Bayou only provides interval data in the API - it isn't available today in the dashboard which only has bill data.
+
+For convenience within the webhook body, all interval data is categorized:
+
+1. first and last interval discovered
+2. available\_data: Provides a hierarchical summary of the account numbers, meters and corresponding time periods from which interval data is available for the customer. Each meter also shows its type of service (electric or gas
+
+JSON
+
+```rdmd-code lang-json theme-light
+{
+    "event": "intervals_ready",
+    "object": {
+      "customer_id": 12345,
+      "customer_external_id": "MSCOTT123",
+      "first_interval_discovered": "2022-11-01T00:00:00Z",
+      "last_interval_discovered": "2022-11-01T00:00:00Z",
+      "available_data": {
+        "account_numbers": [\
+            {\
+                "id": 123456,\
+                "meters": [\
+                    {\
+                    "id": "XYZ12345",\
+                    "type": "gas",\
+                    "periods": [\
+                        {\
+                        "period_from": "2022-11-01T00:00:00Z",\
+                        "period_to": "2022-11-01T00:00:00Z"\
+                        }\
+                    ]\
+                    }\
+                ]\
+            }\
+        ]
+    }
+
+```
+
+# Interval data updates   [Skip link to Interval data updates](https://docs.bayou.energy/docs/interval-data-availability\#interval-data-updates)
+
+After initial connection, Bayou refreshes interval data for each customer in most cases hourly. Because we don't yet have a new\_intervals webhook for this case, intervals can be refreshed by performing a new [get intervals API call](https://docs.bayou.energy/reference/get_customers-customer-id-intervals).
+
+
+
+* * *
+
+## June 2024 Update
+[Back to All](https://docs.bayou.energy/changelog)
+
+# Overview   [Skip link to Overview](https://docs.bayou.energy/changelog/june-2024-update\#overview)
+
+- **Instant utility support:** Bayou now authenticates accounts in one second and returns data within 60 seconds or less for utilities covering 52% of the US population.
+- **Updates to the API call - Get multiple bills for a specific customer:** Retrieved bills can now be filtered and are sorted according to their billed on date.
+
+# Instant utility support   [Skip link to Instant utility support](https://docs.bayou.energy/changelog/june-2024-update\#instant-utility-support)
+
+Bayou now authenticates accounts in one second and returns data within 60 seconds or less for utilities covering 52% of the US population.
+
+![](https://files.readme.io/6d93ef6-Screenshot_2024-06-26_at_16.27.52.png)
+
+New instant utilities that have been added this month are:
+
+1. Arizona Public Service
+2. Delmarva Power
+3. DTE Energy
+4. Kentucky Utilities
+5. Pacific Power
+6. San Diego Gas and Electric
+
+# Updates to the API call - Get multiple bills for a specific customer   [Skip link to Updates to the API call - Get multiple bills for a specific customer](https://docs.bayou.energy/changelog/june-2024-update\#updates-to-the-api-call---get-multiple-bills-for-a-specific-customer)
+
+[**View full details in the Get multiple bills for a specific customer API call**](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+
+## Sorting   [Skip link to Sorting](https://docs.bayou.energy/changelog/june-2024-update\#sorting)
+
+Returned bills are now sorted by their billed\_on date (most recent first and oldest last)
+
+## Filtering with Query parameters   [Skip link to Filtering with Query parameters](https://docs.bayou.energy/changelog/june-2024-update\#filtering-with-query-parameters)
+
+Retrieved bills can now be filtered by account\_number, meter\_id, limit (quantity of bills returned), and the start date and end date of the bill's billed\_on date.
+
+![](https://files.readme.io/3cf4554-Screenshot_2024-06-27_at_06.39.06.png)![](https://files.readme.io/3b767b8-Screenshot_2024-06-27_at_06.39.06.png)
+
+## Errors   [Skip link to Errors](https://docs.bayou.energy/changelog/june-2024-update\#errors)
+
+New errors have also been added to the API to handle potential scenarios around using the query parameters.
+
+![](https://files.readme.io/1a70e6a-Screenshot_2024-06-27_at_06.39.15.png)
+
+## Product Support Requests
+All product support requests should be submitted to [hello@bayou.energy](mailto:hello@bayou.energy).
+
+> ## ðŸ™Œ  In your email please include:
+>
+> 1. A description of the issue
+> 2. Utility or utilities the issue is related to
+> 3. Any relevant Bayou product unique identifiers such as: customer ID(s), bill ID(s), interval ID(s)
+> 4. Any attachments which might be helpful (optionally)
+
+# Response time   [Skip link to Response time](https://docs.bayou.energy/docs/product-support-requests\#response-time)
+
+Bayou strives to respond to all product support requests as quickly as possible and at least within 24 hours.
+
+
+
+* * *
+
+## July 2024 Update
+[Back to All](https://docs.bayou.energy/changelog)
+
+# Overview   [Skip link to Overview](https://docs.bayou.energy/changelog/july-2024-update\#overview)
+
+- **Instant utility support:** Bayou now authenticates accounts in one second and returns data within 60 seconds or less for utilities covering 56% of the US population.
+- **More testing scenarios for Speculoos Power (Bayouâ€™s fake utility:** New test credentials cover multi-account, electric and gas only customer scenarios
+
+# Instant utility support   [Skip link to Instant utility support](https://docs.bayou.energy/changelog/july-2024-update\#instant-utility-support)
+
+Bayou now authenticates accounts in one second and returns data within 60 seconds or less for utilities covering 56% of the US population.
+
+![](https://files.readme.io/917af9d-Screenshot_2024-07-31_at_16.19.27.png)
+
+New instant utilities that have been added this month are:
+
+1. Avista
+2. Georgia Power
+3. Madison Gas & Electric
+4. Rocky Mountain Power
+
+# More testing scenarios for Speculoos Power (Bayouâ€™s fake utility)   [Skip link to More testing scenarios for Speculoos Power (Bayouâ€™s fake utility)](https://docs.bayou.energy/changelog/july-2024-update\#more-testing-scenarios-for-speculoos-power-bayous-fake-utility)
+
+[**View all test credentials for Speculoos Power**](https://docs.bayou.energy/docs/speculoos)
+
+- [multi-account@bayou.energy](mailto:multi-account@bayou.energy): This customer will return multiple accounts that have fake bills and intervals with both gas and electric data
+- [electric-only@bayou.energy](mailto:electric-only@bayou.energy): This customer will return fake bills and intervals only with electric data
+- [gas-only@bayou.energy](mailto:gas-only@bayou.energy): This customer will return fake bills and intervals only with gas data
+
+## Customer Bills API
+Returned bill data is sorted by each bill's `billed_on` date and can be filtered according to available query parameters.
+
+
+
+:
+
+Base URL
+
+https://bayou.energy/api/v2/customers/{customer\_id}/bills
+
+Click `Try It!` to start a request and see the response here!
+
+## Multi-Factor Authentication Overview
+# Relevant utilities   [Skip link to Relevant utilities](https://docs.bayou.energy/docs/multi-factor-authentication-mfa\#relevant-utilities)
+
+Bayou Energy supports multi-factor authentication (MFA) for all instant utilities. Today this includes:
+
+01. Baltimore Gas and Electric (BGE or BG&E)
+02. Commonwealth Edison (ComEd)
+03. Con Edison (ConEd)
+04. Delmarva Power
+05. Eversource
+06. Jersey Central Power and Light (JCPL or JCP&L)
+07. Orange and Rockland (O&R)
+08. PECO
+09. Pepco
+10. Potomac Edison
+11. PSEG New Jersey
+12. San Diego Gas and Electric (SDGE or SDG&E)
+13. Xcel Energy
+
+# Setup   [Skip link to Setup](https://docs.bayou.energy/docs/multi-factor-authentication-mfa\#setup)
+
+No setup is required by the users of Bayouâ€™s product. Customers within instant utilities that require MFA will automatically be supported when connecting their utility accounts.
+
+# User experience for customers   [Skip link to User experience for customers](https://docs.bayou.energy/docs/multi-factor-authentication-mfa\#user-experience-for-customers)
+
+Because MFA is an extension of Bayouâ€™s existing customer form for credential based utility account connection, customers will start by accepting Bayouâ€™s terms on your company branded form (in this case Electric City Solar as a test company)
+
+![](https://files.readme.io/e72cf72-Screen_Shot_2023-08-14_at_09.05.10.png)
+
+Then customers will share their utility credentials.
+
+![](https://files.readme.io/8030b11-Screen_Shot_2023-08-14_at_09.05.21.png)
+
+For a customer account that requires MFA, they will be shown the new, below screen to enter their MFA challenge code. All MFA methods (listed below) the utility offers will be supported except codes delivered via phone call:
+
+1. Security question
+2. Codes delivered via text message
+3. Codes delivered via email message
+4. Codes delivered via phone call
+5. Temporary one time passwords for users of apps like 1Password and Google Authenticator
+
+![](https://files.readme.io/02c420b-Screen_Shot_2023-08-14_at_11.17.57.png)
+
+Customers are greeted with intuitive boxes to enter the digits of their MFA challenge code. Similar to utility credentials, MFA challenge codes entered by customers will be quickly checked for accuracy.
+
+![](https://files.readme.io/2a494ce-Screen_Shot_2023-08-14_at_11.18.24.png)
+
+Submitting incorrect challenge codes give customers the below error message
+
+â€Your code is invalid. Please try again.â€
+
+![](https://files.readme.io/96134fd-Screen_Shot_2023-08-14_at_13.19.28.png)
+
+Upon successful completion of the MFA workflow, customers are given the standard confirmation of successfully completing the form!
+
+# Testing with Speculoos   [Skip link to Testing with Speculoos](https://docs.bayou.energy/docs/multi-factor-authentication-mfa\#testing-with-speculoos)
+
+Companies can test Bayouâ€™s MFA feature using their own utility account(s) and Speculoos, Bayouâ€™s test utility. For all test emails and methods **any password entered will be accepted and the MFA challenge code will be 1234**.
+
+| MFA method | Test email | Password | MFA challenge code / answer |
+| --- | --- | --- | --- |
+| Security question | [ineedmfa+security\_question@bayou.energy](mailto:ineedmfa+security_question@bayou.energy) | any password entered will be accepted | Cook |
+| Codes delivered via text message | [ineedmfa+text\_message@bayou.energy](mailto:ineedmfa+text_message@bayou.energy) | any password entered will be accepted | 1234 |
+| Codes delivered via email | [ineedmfa+email@bayou.energy](mailto:ineedmfa+email@bayou.energy) | any password entered will be accepted | 1234 |
+| Temporary one time password (TOTP) | [ineedmfa+totp@bayou.energy](mailto:ineedmfa+totp@bayou.energy) | any password entered will be accepted | 1234 |
+| Multiple available MFA factors (email or text message) | [ineedmfa+choice@bayou.energy](mailto:ineedmfa+choice@bayou.energy) | any password entered will be accepted | 1234 |
+
+
+
+* * *
+
+- [customer\_has\_filled\_credentials webhook](https://docs.bayou.energy/docs/customer_has_filled_credentials-webhook)
+
+## Support and Requests Overview
+This is Bayou's home for all support and product requests. Specifically this section covers:
+
+1. Support for receiving utility data
+2. Product support requests
+3. Support for utility specific issues
+4. Requesting and receiving new utility and instant data support
+
+> ## ðŸ“˜  Any requests related to the items above can be submitted to [hello@bayou.energy](mailto:hello@bayou.energy)
+
+
+
+* * *
+
+## Bayou Energy Documentation
+[Back to All](https://docs.bayou.energy/changelog)
+
+Welcome to the developer hub and documentation for Bayou Energy!
+
+## Webhook Setup Guide
+The following section defines the callbacks that we send to your servers. The webhook URL and settings can be configured in the [Bayou Dashboard](https://docs.bayou.energy/reference/how-to-set-up-webhooks).
+
+![Input your url for receiving web hooks from Bayou in the Webhook URL data field.](https://files.readme.io/72e730fd384866d373c9f9175aa0788ffd8cc76e941862d5a90cf13c0adaf891-Screenshot_2024-05-24_at_10.31.39.png)
+
+Input your url for receiving web hooks from Bayou in the Webhook URL data field.
+
+## Bayou Energy API
+This is the documentation page for Bayou Energy's Utility Data API. This API allows you to manage your connected utility accounts and retrieve utility data for those accounts. Learn more about Bayou Energy at [www.bayou.energy](https://www.bayou.energy/).
+
+## Utility Data Support
+Bayou provides customer-permissioned utility data according to our data velocity for each utility, [outlined here](https://bayou.energy/utility_support).
+
+API users also are notified of `utility_data_velocity` for a given customer :
+
+1. With the `customer_has_filled_credentials` webhook which is sent when a customer successfully shares their utility credentials
+2. With the `new_bill_status_unparsed` which is sent when bill data is not available instantly.
+
+If you believe that actual data velocity is slower than Bayou's stated data velocity for a given customer or bill has not been met or you urgently need the data, please don't hesitate to email Bayou at [hello@bayou.energy](mailto:hello@bayou.energy).
+
+> ## ðŸ™Œ  Please include any relevant Bayou product unique identifiers such as: Customer ID(s), Bill ID(s).
+
+# Response time   [Skip link to Response time](https://docs.bayou.energy/docs/support-for-receiving-utility-data\#response-time)
+
+Bayou strives to respond to all support requests related to data velocity as quickly as possible and at least within 24 hours.
+
+
+
+* * *
+
+## Utility Issues Notification
+Because Bayou uses utility websites as a primary source for customer-permissioned utility data, at times there may be problems with a utility's website outside of Bayou's control which may cause interruptions in Bayou's product functionality. Unresolved occurrences of a utility specific issue will be posted on this page.
+
+# Notification time   [Skip link to Notification time](https://docs.bayou.energy/docs/support-for-utility-specific-issues\#notification-time)
+
+Bayou will notify all customers via email of any such issues as quickly as possible and at least within 24 hours of encountering the issue.
+
+# Current issues   [Skip link to Current issues](https://docs.bayou.energy/docs/support-for-utility-specific-issues\#current-issues)
+
+## Upcoming First Energy Website Change on March 7th   [Skip link to Upcoming First Energy Website Change on March 7th](https://docs.bayou.energy/docs/support-for-utility-specific-issues\#upcoming-first-energy-website-change-on-march-7th)
+
+This upcoming Friday (March 7th) there will be scheduled maintenance for the First Energy utilities - if you're getting meter data for customers at these utilities you'll need to prepare:
+
+01. Jersey Central Power and Light
+02. Metropolitan Edison
+03. Mon Power
+04. Ohio Edison
+05. Penelec
+06. Penn Power
+07. Potomac Edison
+08. The Illuminating Company
+09. Toledo Edison
+10. West Penn Power
+
+**Expected changes include:**
+
+- All customers needing to change their password, leading to them [needing to re-authenticate with your utility API solution](https://docs.bayou.energy/docs/customer_must_reauthenticate) after changing their passwords
+- New optional [multi-factor authentication for customer login](https://docs.bayou.energy/docs/multi-factor-authentication-mfa)
+- Likely changes to internal website structure / possibly bills
+
+Check out the official notice on First Energy's website here: [https://www.firstenergycorp.com/content/customer/log\_in.html](https://www.firstenergycorp.com/content/customer/log_in.html)
+
+![](https://files.readme.io/37f0f967194734f4828cc168d3a0f4f2bc1e5279379ed6f26082c16c58cf738f-first_energy_website_changes.png)
+
+
+
+* * *
+
+## April 2025 Utility API Update
+[Back to All](https://docs.bayou.energy/changelog)
+
+# Overview   [Skip link to Overview](https://docs.bayou.energy/changelog/bayou-april-2025-utility-api-update\#overview)
+
+- **Instant utility support:** Bayou now has instant customer account authentication, utility bill data and interval meter data delivery within 60 seconds or less for utilities covering 62% of the US population.
+- **Developer Experience - Added Query Parameters to Get Utility Bill Data API Call:** Retrieved bills can now be filtered and are sorted according to their billed on date
+- **Developer Experience - New Javascript events for Bayouâ€™s embedded component:** Developers using Bayou can now increase customer form conversion by controlling their user experience with the newÂ customerEnteredInvalidCredentialsÂ andÂ customerEnteredInvalidMFAChallengeÂ events
+
+# Instant utility support   [Skip link to Instant utility support](https://docs.bayou.energy/changelog/bayou-april-2025-utility-api-update\#instant-utility-support)
+
+Bayou now has instant customer account authentication, utility bill data and interval meter data delivery within 60 seconds or less for utilities covering 62% of the US population.
+
+![Bayou Utility API and Utility Data Support April 2025](https://files.readme.io/1dcb969a1c1693a4c393ac6f6e82504ccf75c17cf2172f0f4ac950eb6cc83acc-bayou_utility_api_coverage_april_2025.png)
+
+New instant utilities that have been added since July 2024 are:
+
+1. AEP Ohio
+2. Baltimore Gas and Electric
+3. Central Maine Power
+4. Dominion Energy Virginia
+5. Evergy
+6. Potomac Edison
+7. PPL Electric
+8. Rochester Gas and Electric
+9. Versant Power
+
+[**View Full Utility Support Here**](https://bayou.energy/utility_support)
+
+# Developer Experience   [Skip link to Developer Experience](https://docs.bayou.energy/changelog/bayou-april-2025-utility-api-update\#developer-experience)
+
+## Added Query Parameters to Get Utility Bill Data API Call   [Skip link to Added Query Parameters to Get Utility Bill Data API Call](https://docs.bayou.energy/changelog/bayou-april-2025-utility-api-update\#added-query-parameters-to-get-utility-bill-data-api-call)
+
+Retrieved bills can now be filtered and are sorted according to their billed on date.
+
+[**View the API call directly here**](https://docs.bayou.energy/reference/get_customers-customer-id-bills)
+
+## New Javascript events for Bayouâ€™s embedded component   [Skip link to New Javascript events for Bayouâ€™s embedded component](https://docs.bayou.energy/changelog/bayou-april-2025-utility-api-update\#new-javascript-events-for-bayous-embedded-component)
+
+Developers using Bayou can now increase customer form conversion by controlling their user experience with the newÂ customerEnteredInvalidCredentialsÂ andÂ customerEnteredInvalidMFAChallengeÂ events
+
+[**View the Embedded component docs here**](https://docs.bayou.energy/changelog/%3Chttps://docs.bayou.energy/docs/bayou-embedded-component%3E)
+
+## Merge Customer Code
+When creating a customer, no data fields are required to be filled. While optional, there are several common parameters used when creating a customer:
+
+- external\_id: can be used to provide your database's unique identifier for a customer. With this approach no Bayou specific unique identifier needs to be stored in your database. This field must be unique.
+- email: the customer's email address
+- utility: Here you provide the Bayou api\_code of the customer's utility. Speculoos Power, Bayou's fake utility can be used for testing.
+
+After creating a customer, there are two ways to have the customer connect their utility account. Both of which can be generated by using the /customers/{id} API request..
+
+> ## ðŸ“˜  Note: both the link and token expire and need to be regenerated after 10 days
+
+1. onboarding\_link: This link is unique to the created customer and can be shared with them to connect their account.
+2. onboarding\_token: the onboarding token for a specific customer that can be used within Bayou's embedded component
+
+
+
+* * *
+
+- [Bayou embedded component](https://docs.bayou.energy/docs/bayou-embedded-component)
+
+## Utility Support Request
+Bayou's current utility support is maintained [here](https://bayou.energy/utility_support). The process for requesting and receiving support for a new utility and instant data is:
+
+1. Request support for a new utility by emailing [hello@bayou.energy](mailto:hello@bayou.energy)
+2. Support for any requested utility will be added within one week with 48 hour data velocity
+3. Once support has been added, work with Bayou to onboard initial customer accounts for the new utility
+4. After enough customers have been onboarded for a given utility, Bayou will shift the utility's data velocity to instant
+
+
+
+* * *
+
+## New Bill Notification
+JSON
+
+```rdmd-code lang-json theme-light
+{
+  "event": "new_bill",
+  "object": {
+    "id": 12345,
+    "external_id": "BILL_123",
+    "status": "unlocked",
+    "customer_id": 123456,
+    "customer_external_id": "MSCOTT123",
+    "billed_on": "2022-08-01",
+    "past_due": false,
+    "outstanding_balance": 1200,
+    "billing_period_from": "2022-07-01",
+    "billing_period_to": "2022-07-31",
+    "utility": "con_edison",
+    "account_number": "1234567",
+    "electricity_consumption": 900,
+    "electricity_amount": 9060,
+    "delivery_charge": 5060,
+    "supply_charge": 4000,
+    "community_solar_bill_credit": -6440,
+    "gas_consumption": 90,
+    "gas_consumption_unit": "therms",
+    "gas_amount": 2940,
+    "total_amount": 12000,
+    "meters": [\
+      {\
+        "id": "XYZ12345",\
+        "status": "unlocked",\
+        "type": "gas",\
+        "billing_period_from": "2022-07-01",\
+        "billing_period_to": "2022-07-31",\
+        "consumption": 90,\
+        "address": {\
+          "line_1": "123 Main St",\
+          "line_2": "Apt 1",\
+          "city": "New York",\
+          "state": "NY",\
+          "postal_code": 10001,\
+          "postal_code_suffix": 1234,\
+          "country": "US"\
+        },\
+        "tariff": "123 Residential",\
+        "additional_attributes": {\
+        	"gas_choice_id": "123456789"\
+        }\
+      },\
+      {\
+        "id": "XYZ98765",\
+        "status": "unlocked",\
+        "type": "electric",\
+        "billing_period_from": "2022-07-01",\
+        "billing_period_to": "2022-07-31",\
+        "consumption": 900,\
+        "address": {\
+          "line_1": "123 Main St",\
+          "line_2": "Apt 1",\
+          "city": "New York",\
+          "state": "NY",\
+          "postal_code": 10001,\
+          "postal_code_suffix": 1234,\
+          "country": "US"\
+        },\
+        "tariff": "456 Residential",\
+        "additional_attributes": {\
+        	"electric_choice_id": "987654321"\
+        }\
+      }\
+    ],
+    "file_url": "https://private.bayou.energy/bills/12345.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=XYZ&X-Amz-Date=20220701T000000Z&X-Amz-Expires=1800&X-Amz-Signature=ABCEF0123456&X-Amz-SignedHeaders=host"
+  }
+}
+
+```
+
+## Updated Bill Notification
+JSON
+
+```rdmd-code lang-json theme-light
+{
+  "event": "updated_bill",
+  "object": {
+    "id": 12345,
+    "external_id": "BILL_123",
+    "status": "unlocked",
+    "customer_id": 123456,
+    "customer_external_id": "MSCOTT123",
+    "billed_on": "2022-08-01",
+    "past_due": false,
+    "outstanding_balance": 1200,
+    "billing_period_from": "2022-07-01",
+    "billing_period_to": "2022-07-31",
+    "utility": "con_edison",
+    "account_number": "1234567",
+    "electricity_consumption": 900,
+    "electricity_amount": 9060,
+    "delivery_charge": 5060,
+    "supply_charge": 4000,
+    "community_solar_bill_credit": -6440,
+    "gas_consumption": 90,
+    "gas_consumption_unit": "therms",
+    "gas_amount": 2940,
+    "total_amount": 12000,
+    "meters": [\
+      {\
+        "id": "XYZ12345",\
+        "status": "unlocked",\
+        "type": "gas",\
+        "billing_period_from": "2022-07-01",\
+        "billing_period_to": "2022-07-31",\
+        "consumption": 90,\
+        "address": {\
+          "line_1": "123 Main St",\
+          "line_2": "Apt 1",\
+          "city": "New York",\
+          "state": "NY",\
+          "postal_code": 10001,\
+          "postal_code_suffix": 1234,\
+          "country": "US"\
+        },\
+        "tariff": "123 Residential",\
+        "additional_attributes": {\
+        	"gas_choice_id": "123456789"\
+        }\
+      },\
+      {\
+        "id": "XYZ98765",\
+        "status": "unlocked",\
+        "type": "electric",\
+        "billing_period_from": "2022-07-01",\
+        "billing_period_to": "2022-07-31",\
+        "consumption": 900,\
+        "address": {\
+          "line_1": "123 Main St",\
+          "line_2": "Apt 1",\
+          "city": "New York",\
+          "state": "NY",\
+          "postal_code": 10001,\
+          "postal_code_suffix": 1234,\
+          "country": "US"\
+        },\
+        "tariff": "456 Residential",\
+        "additional_attributes": {\
+        	"electric_choice_id": "987654321"\
+        }\
+      }\
+    ],
+    "file_url": "https://private.bayou.energy/bills/12345.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=XYZ&X-Amz-Date=20220701T000000Z&X-Amz-Expires=1800&X-Amz-Signature=ABCEF0123456&X-Amz-SignedHeaders=host"
+  }
+}
+
+```
+
+## Initial Bill Discovery
+JSON
+
+```rdmd-code lang-json theme-light
+{
+  "event": "bills_ready",
+  "object": {
+    "id": 12345,
+    "external_id": "MSCOTT123",
+    "bills_parsed": [\
+      {\
+        "id": 12345,\
+        "external_id": "BILL_123",\
+        "status": "unlocked",\
+        "customer_id": 123456,\
+        "customer_external_id": "MSCOTT123",\
+        "billed_on": "2022-08-01",\
+        "past_due": false,\
+        "outstanding_balance": 1200,\
+        "billing_period_from": "2022-07-01",\
+        "billing_period_to": "2022-07-31",\
+        "utility": "con_edison",\
+        "account_number": "1234567",\
+        "electricity_consumption": 900,\
+        "electricity_amount": 9060,\
+        "delivery_charge": 5060,\
+        "supply_charge": 4000,\
+        "community_solar_bill_credit": -6440,\
+        "gas_consumption": 90,\
+        "gas_consumption_unit": "therms",\
+        "gas_amount": 2940,\
+        "total_amount": 12000,\
+        "meters": [\
+          {\
+            "id": "XYZ12345",\
+            "status": "unlocked",\
+            "type": "gas",\
+            "billing_period_from": "2022-07-01",\
+            "billing_period_to": "2022-07-31",\
+            "consumption": 90,\
+            "address": {\
+              "line_1": "123 Main St",\
+              "line_2": "Apt 1",\
+              "city": "New York",\
+              "state": "NY",\
+              "postal_code": 10001,\
+              "postal_code_suffix": 1234,\
+              "country": "US"\
+            },\
+            "tariff": "123 Residential",\
+            "additional_attributes": {\
+              "gas_choice_id": "123456789"\
+            }\
+          },\
+          {\
+            "id": "XYZ98765",\
+            "status": "unlocked",\
+            "type": "electric",\
+            "billing_period_from": "2022-07-01",\
+            "billing_period_to": "2022-07-31",\
+            "consumption": 900,\
+            "address": {\
+              "line_1": "123 Main St",\
+              "line_2": "Apt 1",\
+              "city": "New York",\
+              "state": "NY",\
+              "postal_code": 10001,\
+              "postal_code_suffix": 1234,\
+              "country": "US"\
+            },\
+            "tariff": "456 Residential",\
+            "additional_attributes": {\
+              "electric_choice_id": "987654321"\
+            }\
+          }\
+        ],\
+        "file_url": "https://private.bayou.energy/bills/12345.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=XYZ&X-Amz-Date=20220701T000000Z&X-Amz-Expires=1800&X-Amz-Signature=ABCEF0123456&X-Amz-SignedHeaders=host"\
+      }\
+    ],
+    "bills_unparsed": [\
+      {\
+        "id": 12346\
+      }\
+    ],
+    "available_data": {
+      "account_numbers": [\
+        {\
+          "id": "1234567",\
+          "meters": [\
+            {\
+              "id": "XYZ12345",\
+              "type": "gas",\
+              "periods": [\
+                {\
+                  "period_from": "2022-07-01",\
+                  "period_to": "2022-07-31"\
+                }\
+              ]\
+            },\
+            {\
+              "id": "XYZ98765",\
+              "type": "electric",\
+              "periods": [\
+                {\
+                  "period_from": "2022-07-01",\
+                  "period_to": "2022-07-31"\
+                }\
+              ]\
+            }\
+          ]\
+        }\
+      ]
+    }
+  }
+}
+
+```
+
+## Bayou QuickStart Guide
+> ## ðŸ‘  If you haven't already, create an account here, [https://staging.bayou.energy/users/sign\_up](https://staging.bayou.energy/users/sign_up)
+
+Bayou QuickStart Demo - YouTube
+
+Bayou Energy
+
+2 subscribers
+
+[Bayou QuickStart Demo](https://www.youtube.com/watch?v=pw92xB93r6c)
+
+Bayou Energy
+
+Search
+
+Watch later
+
+Share
+
+Copy link
+
+Info
+
+Shopping
+
+Tap to unmute
+
+If playback doesn't begin shortly, try restarting your device.
+
+More videos
+
+## More videos
+
+You're signed out
+
+Videos you watch may be added to the TV's watch history and influence TV recommendations. To avoid this, cancel and sign in to YouTube on your computer.
+
+CancelConfirm
+
+Share
+
+Include playlist
+
+An error occurred while retrieving sharing information. Please try again later.
+
+[Watch on](https://www.youtube.com/watch?v=pw92xB93r6c&embeds_widget_referrer=https%3A%2F%2Fdocs.bayou.energy%2F&embeds_referring_euri=https%3A%2F%2Fcdn.embedly.com%2F&embeds_referring_origin=https%3A%2F%2Fcdn.embedly.com)
+
+0:00
+
+0:00 / 2:22â€¢Live
+
+â€¢
+
+[Watch on YouTube](https://www.youtube.com/watch?v=pw92xB93r6c "Watch on YouTube")
+
+PythonJavaScriptRuby
+
+```rdmd-code lang-python theme-light
+import requests
+import time
+
+# Bayou has two environments, staging, as shown below, and production, bayou_domain="bayou.energy"
+bayou_domain = "staging.bayou.energy"
+# Get and manage API keys at f"https://{bayou_domain}/dashboard/keys"
+# API reference: https://docs.bayou.energy/v2.0/reference/authentication
+bayou_api_key = "your key here"
+
+# Create a new customer. API reference: https://docs.bayou.energy/v2.0/reference/post_customers
+customer = requests.post(f"https://{bayou_domain}/api/v2/customers", json={
+	"utility": "speculoos_power", # Speculoos is Bayou's fake utility for testing, https://docs.bayou.energy/v2.0/reference/utility-support
+	"email" : "QuickStart@bayou.energy" # Email address isn't a required field, https://docs.bayou.energy/docs/merge-customer-code-with-your-project
+}, auth=(bayou_api_key, '')).json()
+
+# We'll provide the customer onboarding link and credentials to complete the form in your terminal.
+print(f"""
+Fill the customer credentials using the following link: {customer['onboarding_link']}
+
+For credentials: The email is iamvalid@bayou.energy and the password is validpassword. We'll wait while you complete the form!
+""")
+
+# Bayou recommends listening for webhook events for updates about customer authentication and data availability.
+# API reference: https://docs.bayou.energy/v2.0/reference/how-to-set-up-webhooks
+# Below Bayou automatically refreshes customer records to simulate testing webhooks locally (this is the QUICKstart),
+while not customer["has_filled_credentials"]: # Maps to customer_has_filled_credentials, https://docs.bayou.energy/v2.0/reference/customer_has_filled_credentials
+	time.sleep(3)
+	# We refresh the customer data until they have filled credentials
+	customer = requests.get(f"https://{bayou_domain}/api/v2/customers/{customer['id']}", auth=(bayou_api_key, '')).json()
+
+print("The customer, in this case you, has filled credentials. First we'll call the /bills endpoint and print the first 12 bills. Fetching bills now!\n")
+time.sleep(3) # Pause for 3 seconds to allow you to see that the above terminal message
+
+while not customer["bills_are_ready"]: # Maps to bills_ready: https://docs.bayou.energy/v2.0/reference/event-informing-that-the-initial-bill-discovery-is-done-for-a-specific-customer
+	time.sleep(3)
+	# We refresh the customer data until their bills are ready
+	customer = requests.get(f"https://{bayou_domain}/api/v2/customers/{customer['id']}", auth=(bayou_api_key, '')).json()
+
+# Get all bills for a specific customer. API reference: https://docs.bayou.energy/v2.0/reference/get_customers-customer-id-bills
+bills = requests.get(f"https://{bayou_domain}/api/v2/customers/{customer['id']}/bills", auth=(bayou_api_key, '')).json()
+
+# Now that we've fetched all bills, we're printing 12 for readability
+print("\n")
+for bill in bills[:12]:
+	print(bill)
+
+time.sleep(10) # Pause for 10 seconds to allow you to quickly review bill data
+
+print("\n","Now we'll call the /intervals endpoint and print the first 10 intervals for each meter. Fetching intervals now!")
+time.sleep(3) # Pause for 3 seconds to allow you to see that the above terminal message
+
+while not customer["intervals_are_ready"]:
+	time.sleep(3)
+	# We refresh the customer data until their intervals are ready
+	customer = requests.get(f"https://{bayou_domain}/api/v2/customers/{customer['id']}", auth=(bayou_api_key, '')).json()
+
+# Get all intervals for a specific customer. API reference: https://docs.bayou.energy/v2.0/reference/get_customers-customer-id-intervals
+intervals = requests.get(f"https://{bayou_domain}/api/v2/customers/{customer['id']}/intervals", auth=(bayou_api_key, '')).json()
+
+for meter in intervals["meters"]:
+    print("\n",f"Intervals for meter {meter['id']}:")
+    # Now that we've fetched all intervals, we're printing 10 from each meter for readability
+    for interval in meter["intervals"][:10]:
+    	print(interval)
+
+time.sleep(10) # Pause for 10 seconds to allow you to quickly review interval data
+print("""
+Congratulations!
+
+Youâ€™re ready to get customer utility data instantly with Bayou.
+As a recommended next step, visit Bayouâ€™s documentation for moving from QuickStart to deployment:
+https://docs.bayou.energy/docs/merge-customer-code-with-your-project
+
+Want to chat with the Bayou team? Book time here, https://calendly.com/jamesbayouenergy/30min or text James our CEO at +1 504 722 8987.
+""")
+
+```
+
+```rdmd-code lang-javascript theme-light
+const axios = require('axios');
+
+// Bayou has two environments, staging, as shown below, and production, bayou_domain="bayou.energy"
+const bayouDomain = "staging.bayou.energy";
+// Get and manage API keys at `https://${bayouDomain}/dashboard/keys`
+// API reference: https://docs.bayou.energy/v2.0/reference/authentication
+const bayouApiKey = "your_api_key";
+const authHeaders = { 'Authorization': `Basic ${Buffer.from(`${bayouApiKey}:`).toString('base64')}` };
+
+async function createCustomer() {
+
+    // Create a new customer. API reference: https://docs.bayou.energy/v2.0/reference/post_customers
+    const response = await axios.post(`https://${bayouDomain}/api/v2/customers`, {
+        utility: "speculoos_power", // Speculoos is Bayou's fake utility for testing, https://docs.bayou.energy/v2.0/reference/utility-support
+        }, {
+        headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders,
+        },
+    });
+    let customer = response.data;
+
+    // We'll provide the customer onboarding link and credentials to complete the form in your terminal.
+    console.log(`
+        Fill the customer credentials using the following link: ${customer.onboarding_link}
+
+        For credentials: The email is iamvalid@bayou.energy and the password is validpassword. We'll wait while you complete the form!
+      `);
+
+    // Bayou recommends listening for webhook events for updates about customer authentication and data availability.
+    // API reference: https://docs.bayou.energy/v2.0/reference/how-to-set-up-webhooks
+    // Below Bayou automatically refreshes customer records to simulate testing webhooks locally (this is the QUICKstart),
+
+    // Maps to customer_has_filled_credentials, https://docs.bayou.energy/v2.0/reference/customer_has_filled_credentials
+    while (!customer.has_filled_credentials) {
+        // We refresh the customer data until they have filled credentials
+        const response = await axios.get(`https://${bayouDomain}/api/v2/customers/${customer.id}`, { headers: authHeaders });
+        customer = response.data;
+        await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+
+    console.log("The customer, in this case you, has filled credentials. First, we'll call the /bills endpoint and print the first 12 bills. Fetching bills now!\n");
+    await new Promise(resolve => setTimeout(resolve, 3000)); // Pause for 3 seconds to allow you to see that the above terminal message
+
+    // Maps to bills_ready: https://docs.bayou.energy/v2.0/reference/event-informing-that-the-initial-bill-discovery-is-done-for-a-specific-customer
+    while (!customer.bills_are_ready) {
+        // We refresh the customer data until their bills are ready
+        const response = await axios.get(`https://${bayouDomain}/api/v2/customers/${customer.id}`, { headers: authHeaders });
+        customer = response.data;
+        await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+
+    // Get all bills for a specific customer. API reference: https://docs.bayou.energy/v2.0/reference/get_customers-customer-id-bills
+    const billResponse = await axios.get(`https://${bayouDomain}/api/v2/customers/${customer.id}/bills`, { headers: authHeaders });
+    const bills = billResponse.data;
+
+    // Now that we've fetched all bills, we're printing 12 for readability
+    console.log("\nFirst 12 bills:\n");
+    bills.slice(0, 12).forEach(bill => {
+        console.log(bill);
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 10000)); // Pause for 10 seconds to allow you to quickly review bill data
+
+    console.log("\nNow we'll call the /intervals endpoint and print the first 10 intervals for each meter. Fetching intervals now!");
+    await new Promise(resolve => setTimeout(resolve, 3000)); // Pause for 3 seconds to allow you to see that the above terminal message
+
+    while (!customer.intervals_are_ready) {
+        // We refresh the customer data until their intervals are ready
+        const response = await axios.get(`https://${bayouDomain}/api/v2/customers/${customer.id}`, { headers: authHeaders });
+        customer = response.data;
+        await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+
+    // Get all intervals for a specific customer. API reference: https://docs.bayou.energy/v2.0/reference/get_customers-customer-id-intervals
+    const intervalsResponse = await axios.get(`https://${bayouDomain}/api/v2/customers/${customer.id}/intervals`, { headers: authHeaders });
+    const intervals = intervalsResponse.data;
+
+    console.log("\nIntervals for each meter:\n");
+
+    intervals.meters.forEach(meter => {
+        // Now that we've fetched all intervals, we're printing 10 from each meter for readability
+        console.log(`\nIntervals for meter ${meter.id}:`);
+        meter.intervals.slice(0, 10).forEach(interval => {
+            console.log(interval);
+        });
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 10000)); // Pause for 10 seconds to allow you to quickly review interval data
+
+    console.log(`Congratulations!
+
+    Youâ€™re ready to get customer utility data instantly with Bayou.
+    As a recommended next step, visit Bayouâ€™s documentation for moving from QuickStart to deployment:
+    https://docs.bayou.energy/docs/merge-customer-code-with-your-project
+
+    Want to chat with the Bayou team? Book time here, https://calendly.com/jamesbayouenergy/30min or text James our CEO at +1 504 722 8987.`);
+
+}
+
+// Call the main function to start the process
+createCustomer();
+
+```
+
+```rdmd-code lang-ruby theme-light
+require 'net/http'
+require 'uri'
+require 'json'
+require 'base64'
+
+# Bayou has two environments, staging, as shown below, and production, bayou_domain="bayou.energy"
+bayou_domain = "staging.bayou.energy"
+# Get and manage API keys at f"https://#{bayou_domain}/dashboard/keys"
+# API reference: https://docs.bayou.energy/v2.0/reference/authentication
+bayou_api_key = "your_api_key"
+auth_headers = {:'Authorization' => "Basic #{Base64.strict_encode64("#{bayou_api_key}:")}"}
+
+# Create a new customer. API reference: https://docs.bayou.energy/v2.0/reference/post_customers
+
+http = Net::HTTP.new(bayou_domain, 443)
+http.use_ssl = true
+
+response = http.post("/api/v2/customers", {
+    "utility" => "speculoos_power", # Speculoos is Bayou's fake utility for testing, https://docs.bayou.energy/v2.0/reference/utility-support
+  }.to_json,
+  {'Content-Type' => 'application/json', **auth_headers})
+customer = JSON.parse(response.body)
+
+# We'll provide the customer onboarding link and credentials to complete the form in your terminal.
+puts <<~EOS
+  Fill the customer credentials using the following link: #{customer['onboarding_link']}
+
+  For credentials: The email is iamvalid@bayou.energy and the password is validpassword. We'll wait while you complete the form!
+EOS
+
+# Bayou recommends listening for webhook events for updates about customer authentication and data availability.
+# API reference: https://docs.bayou.energy/v2.0/reference/how-to-set-up-webhooks
+# Below Bayou automatically refreshes customer records to simulate testing webhooks locally (this is the QUICKstart),
+while not customer["has_filled_credentials"] do # Maps to customer_has_filled_credentials, https://docs.bayou.energy/v2.0/reference/customer_has_filled_credentials
+  sleep(3)
+  # We refresh the customer data until they have filled credentials
+  response = http.get("/api/v2/customers/#{customer['id']}", auth_headers)
+  customer = JSON.parse(response.body)
+end
+
+puts "The customer, in this case you, has filled credentials. First, we'll call the /bills endpoint and print the first 12 bills. Fetching bills now!\n"
+sleep(3) # Pause for 3 seconds to allow you to see that the above terminal message
+
+while not customer["bills_are_ready"] do # Maps to bills_ready: https://docs.bayou.energy/v2.0/reference/event-informing-that-the-initial-bill-discovery-is-done-for-a-specific-customer
+  sleep(3)
+  # We refresh the customer data until their bills are ready
+  response = http.get("/api/v2/customers/#{customer['id']}", auth_headers)
+  customer = JSON.parse(response.body)
+end
+
+# Get all bills for a specific customer. API reference: https://docs.bayou.energy/v2.0/reference/get_customers-customer-id-bills
+response = http.get("/api/v2/customers/#{customer['id']}/bills", auth_headers)
+bills = JSON.parse(response.body)
+
+# Now that we've fetched all bills, we're printing 12 for readability
+puts "\n"
+bills.first(12).each do |bill|
+  puts bill
+end
+
+sleep(10) # Pause for 10 seconds to allow you to quickly review bill data
+
+puts "\nNow we'll call the /intervals endpoint and print the first 10 intervals for each meter. Fetching intervals now!"
+sleep(3) # Pause for 3 seconds to allow you to see that the above terminal message
+
+while not customer["intervals_are_ready"] do
+  sleep(3)
+  # We refresh the customer data until their intervals are ready
+  response = http.get("/api/v2/customers/#{customer['id']}", auth_headers)
+  customer = JSON.parse(response.body)
+end
+
+# Get all intervals for a specific customer. API reference: https://docs.bayou.energy/v2.0/reference/get_customers-customer-id-intervals
+response = http.get("/api/v2/customers/#{customer['id']}/intervals", auth_headers)
+intervals = JSON.parse(response.body)
+
+intervals["meters"].each do |meter|
+  puts "\nIntervals for meter #{meter['id']}:"
+  # Now that we've fetched all intervals, we're printing 10 from each meter for readability
+  meter["intervals"].first(10).each do |interval|
+    puts interval
+  end
+end
+
+sleep(10) # Pause for 10 seconds to allow you to quickly review interval data
+puts <<~EOS
+  Congratulations!
+
+  Youâ€™re ready to get customer utility data instantly with Bayou.
+  As a recommended next step, visit Bayouâ€™s documentation for moving from QuickStart to deployment:
+  https://docs.bayou.energy/docs/merge-customer-code-with-your-project
+
+  Want to chat with the Bayou team? Book time here, https://calendly.com/jamesbayouenergy/30min or text James our CEO at +1 504 722 8987.
+EOS
+
+```
+
+
+
+* * *
+
+- [Merge customer creation code with your project](https://docs.bayou.energy/docs/merge-customer-code-with-your-project)

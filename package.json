@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@api/bayou": "file:.api/apis/bayou",
+    "axios": "^1.8.4",
     "next": "15.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
