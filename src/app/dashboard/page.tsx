@@ -15,9 +15,10 @@ import { MuffinLogo } from '../muffin-logo';
 import styles from "../page.module.css";
 import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SignInButton } from '../components/SignInButton';
 import Link from 'next/link';
+import { useAppContext } from '../context/AppContext';
 
 // Mock data for energy usage and projected savings
 const energyData = [
@@ -117,6 +118,13 @@ export default function Dashboard() {
   const [forecastData, setForecastData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { hasCredentials, customerId } = useAppContext();
+
+  useEffect(() => {
+    if (hasCredentials && customerId) {
+      fetchForecastData(customerId);
+    }
+  }, [hasCredentials, customerId]);
 
   const fetchForecastData = async (customerId: number) => {
     try {
