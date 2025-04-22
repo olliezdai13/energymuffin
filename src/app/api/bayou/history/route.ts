@@ -1,6 +1,6 @@
 import { ConsumptionRecord, createConsumptionRecord, createForecastRequest, ForecastRequest } from '@/app/models/palmettoRequest';
 import { createConsumptionResponse, createForecastResponseRecord } from '@/app/models/palmettoResponse';
-import { getCustomerBillHistory } from '@/app/services/bayou';
+import { formatCustomerAddress, getCustomerBillHistory, getCustomerDetails } from '@/app/services/bayou';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
@@ -47,8 +47,11 @@ export async function GET(request: NextRequest) {
         const startDate = new Date();
         startDate.setMonth(startDate.getMonth() - months);
 
+        // Random address for now (until we have a way to get the customer's address via creating a new Bayou customer and intaking address field)
+        const customerAddress = "3048 Partridge Ave, Oakland, CA 94605"; // await formatCustomerAddress(customerId);
+
         const forecastRequest = {
-            address: "123 Main St", // TODO: Get actual address from customer data
+            address: customerAddress,
             from_datetime: startDate.toISOString().split('T')[0],
             to_datetime: endDate.toISOString().split('T')[0],
             granularity: 'month'
