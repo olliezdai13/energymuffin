@@ -5,7 +5,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Container from '@mui/material/Container';
-import { MuffinLogo } from './muffin-logo';
 import styles from "./page.module.css";
 
 // Mock data for energy usage and projected savings
@@ -114,7 +113,6 @@ export default function Home() {
             gap: 2,
             mb: 4
           }}>
-            <MuffinLogo width={48} height={48} />
             <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
               Energy Muffin
             </Typography>
@@ -177,7 +175,7 @@ export default function Home() {
                       stroke="#666"
                       tick={{ fill: '#666', fontSize: 12 }}
                       axisLine={{ stroke: '#e0e0e0' }}
-                      tickFormatter={(value) => `$${value}`}
+                      tickFormatter={(value: any) => `$${value}`}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend 

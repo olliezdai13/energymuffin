@@ -10,10 +10,14 @@
   },
   "dependencies": {
     "@api/bayou": "file:.api/apis/bayou",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.0.2",
     "axios": "^1.8.4",
     "next": "15.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "recharts": "^2.15.3",
     "zod": "^3.24.3"
   },
   "devDependencies": {
