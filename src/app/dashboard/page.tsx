@@ -22,30 +22,22 @@ import { useAppContext } from '../context/AppContext';
 
 // Mock data for energy usage and projected savings
 const energyData = [
-  { month: 'Jan', usage: 120, savings: null, isForecasted: false },
-  { month: 'Feb', usage: 135, savings: null, isForecasted: false },
-  { month: 'Mar', usage: 130, savings: null, isForecasted: false },
-  { month: 'Apr', usage: 125, savings: null, isForecasted: false },
-  { month: 'May', usage: 110, savings: 30, isForecasted: true },
-  { month: 'Jun', usage: 105, savings: 35, isForecasted: true },
-  { month: 'Jul', usage: 100, savings: 40, isForecasted: true },
-  { month: 'Aug', usage: 95, savings: 45, isForecasted: true },
-  { month: 'Sep', usage: 90, savings: 50, isForecasted: true },
-  { month: 'Oct', usage: 85, savings: 55, isForecasted: true },
-  { month: 'Nov', usage: 80, savings: 60, isForecasted: true },
-  { month: 'Dec', usage: 75, savings: 65, isForecasted: true },
-];
-
-const pieData = [
-  { name: 'Space Heating', value: 41, color: '#2196f3' },
-  { name: 'Water Heating', value: 26, color: '#ff9800' },
-  { name: 'Appliances', value: 15, color: '#4caf50' },
-  { name: 'Lighting', value: 12, color: '#9c27b0' },
-  { name: 'Other', value: 6, color: '#e0e0e0' }
+  { month: 'Jan', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'Feb', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'Mar', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'Apr', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'May', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'Jun', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'Jul', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'Aug', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'Sep', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'Oct', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'Nov', usage: 0, savings: null, isForecasted: false, isUnknown: true },
+  { month: 'Dec', usage: 0, savings: null, isForecasted: false, isUnknown: true },
 ];
 
 const CustomBar = (props: any) => {
-  const { fill, x, y, width, height, isForecasted, value } = props;
+  const { fill, x, y, width, height, isForecasted, value, isUnknown } = props;
   
   return (
     <g>
@@ -54,9 +46,9 @@ const CustomBar = (props: any) => {
         y={y}
         width={width}
         height={height}
-        fill={fill}
+        fill={isUnknown ? '#e0e0e0' : fill}
         fillOpacity={isForecasted ? 0.7 : 1}
-        stroke={fill}
+        stroke={isUnknown ? '#e0e0e0' : fill}
         strokeWidth={2}
         strokeDasharray={isForecasted ? "4 4" : "0"}
         rx={4}
@@ -69,7 +61,7 @@ const CustomBar = (props: any) => {
         fill="#666"
         fontSize={12}
       >
-        ${value}
+        {isUnknown ? '$??' : `$${value}`}
       </text>
     </g>
   );
@@ -215,6 +207,21 @@ export default function Dashboard() {
       </AppBar>
 
       <Container maxWidth="lg" sx={{ py: 4 }}>
+        {!hasCredentials && (
+          <Box sx={{ mb: 4 }}>
+            <Paper elevation={0} sx={{
+              p: 3,
+              background: '#fff3e0',
+              borderRadius: 3,
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+              border: '1px solid rgba(0, 0, 0, 0.05)'
+            }}>
+              <Typography variant="h6" sx={{ color: '#e65100', fontWeight: 600 }}>
+                Please sign in to see your personalized results
+              </Typography>
+            </Paper>
+          </Box>
+        )}
         {error && (
           <Box sx={{ mb: 4 }}>
             <Paper elevation={0} sx={{
