@@ -185,14 +185,31 @@ export default function Home() {
                 Energy Muffin
               </Typography>
             </Box>
-            <Button 
-              variant="contained" 
-              color="primary"
-              onClick={handleSignIn}
-              sx={{ ml: 'auto' }}
-            >
-              Sign In
-            </Button>
+            {hasCredentials ? (
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 2,
+                ml: 'auto',
+                p: 1,
+                borderRadius: 1,
+                backgroundColor: 'rgba(25, 118, 210, 0.08)'
+              }}>
+                <AccountCircleIcon sx={{ color: '#1976d2' }} />
+                <Typography variant="body1" sx={{ color: '#1a1a1a', fontWeight: 500 }}>
+                  Welcome, Troy
+                </Typography>
+              </Box>
+            ) : (
+              <Button 
+                variant="contained" 
+                color="primary"
+                onClick={handleSignIn}
+                sx={{ ml: 'auto' }}
+              >
+                Sign In
+              </Button>
+            )}
           </Toolbar>
         </Container>
       </AppBar>
@@ -224,6 +241,17 @@ export default function Home() {
               <Typography variant="body2" color="text.secondary">
                 Please complete the sign-in process in the new window
               </Typography>
+              {onboardingLink && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  href={onboardingLink}
+                  target="_blank"
+                  sx={{ mt: 2 }}
+                >
+                  Open Sign In Window
+                </Button>
+              )}
             </>
           ) : (
             <>
