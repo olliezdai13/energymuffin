@@ -243,9 +243,9 @@ export default function Dashboard() {
                 Save more by doing this
               </Typography>
               <Typography variant="h6" sx={{ color: '#1976d2' }}>
-                Heat your home before 4 PM to save up to ${forecastData.length > 0
+                Heat your home from 12pm - 3pm to save up to <span style={{ color: '#4caf50' }}>${forecastData.length > 0
                   ? forecastData.reduce((sum, record) => sum + (record.savings || 0), 0)
-                  : 30}{forecastData.length > 0 ? " in the next 12 months" : "/month"}
+                  : 30}</span>{forecastData.length > 0 ? " in the next 12 months" : "/month"}
               </Typography>
             </Paper>
           </Box>
