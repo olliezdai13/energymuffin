@@ -114,8 +114,57 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function Dashboard() {
-  const handleSignIn = () => {
-    // Handle any dashboard-specific sign-in logic here
+  const [forecastData, setForecastData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchForecastData = async (customerId: number) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const params = new URLSearchParams({
+        customerId: customerId.toString(),
+        monthsBefore: '12',
+        monthsAfter: '12'
+      });
+      
+      const response = await fetch(`/api/bayou/forecast?${params.toString()}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch forecast data');
+      }
+      
+      const data = await response.json();
+      
+      if (!data || !data.monthly_forecasts) {
+        throw new Error('Invalid forecast data received');
+      }
+      
+      // Transform the forecast data into the format expected by the chart
+      const transformedData = data.monthly_forecasts.map((record: any) => ({
+        month: new Date(record.month_year).toLocaleString('default', { month: 'short' }),
+        usage: record.action_cost || 0,
+        savings: record.action_savings || 0,
+        isForecasted: new Date(record.month_year) > new Date()
+      }));
+      
+      setForecastData(transformedData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch forecast data');
+      console.error('Error fetching forecast data:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignIn = async (customerId: number) => {
+    await fetchForecastData(customerId);
   };
 
   return (
@@ -155,6 +204,19 @@ export default function Dashboard() {
       </AppBar>
 
       <Container maxWidth="lg" sx={{ py: 4 }}>
+        {error && (
+          <Box sx={{ mb: 4 }}>
+            <Paper elevation={0} sx={{ 
+              p: 2, 
+              background: '#ffebee',
+              borderRadius: 2,
+              border: '1px solid #ffcdd2'
+            }}>
+              <Typography color="error">{error}</Typography>
+            </Paper>
+          </Box>
+        )}
+
         <Box sx={{ width: '100%', mb: 6 }}>
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4, width: '100%' }}>
             <Paper elevation={0} sx={{ 
@@ -192,62 +254,74 @@ export default function Dashboard() {
               gap: 4,
               alignItems: 'center'
             }}>
-              <Box sx={{ flex: 1, height: 400, position: 'relative' }}>
-                <ResponsiveContainer>
-                  <ComposedChart
-                    data={energyData}
-                    margin={{ top: 40, right: 30, left: 20, bottom: 20 }}
-                    barSize={32}
-                  >
-                    <CartesianGrid 
-                      strokeDasharray="3 3" 
-                      stroke="#f0f0f0"
-                      vertical={false}
-                    />
-                    <XAxis 
-                      dataKey="month" 
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 12 }}
-                      axisLine={{ stroke: '#e0e0e0' }}
-                    />
-                    <YAxis 
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 12 }}
-                      axisLine={{ stroke: '#e0e0e0' }}
-                      tickFormatter={(value) => `$${value}`}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend 
-                      verticalAlign="top" 
-                      height={36}
-                      iconType="rect"
-                      iconSize={8}
-                    />
-                    <Bar
-                      dataKey="usage"
-                      fill="#2196f3"
-                      name="Energy Usage ($)"
-                      shape={<CustomBar />}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="savings"
-                      stroke="#4caf50"
-                      strokeWidth={2}
-                      name="Projected Savings ($)"
-                      dot={{ stroke: '#4caf50', strokeWidth: 2, r: 4, fill: 'white' }}
-                      activeDot={{ r: 6, stroke: '#4caf50', strokeWidth: 2, fill: 'white' }}
-                      connectNulls={true}
-                      label={{ 
-                        position: 'top',
-                        fill: '#4caf50',
-                        fontSize: 12,
-                        formatter: (value: any) => value ? `$${value}` : ''
-                      }}
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </Box>
+              {isLoading ? (
+                <Box sx={{ 
+                  width: '100%', 
+                  height: 400, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center' 
+                }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <Box sx={{ flex: 1, height: 400, position: 'relative' }}>
+                  <ResponsiveContainer>
+                    <ComposedChart
+                      data={forecastData.length > 0 ? forecastData : energyData}
+                      margin={{ top: 40, right: 30, left: 20, bottom: 20 }}
+                      barSize={32}
+                    >
+                      <CartesianGrid 
+                        strokeDasharray="3 3" 
+                        stroke="#f0f0f0"
+                        vertical={false}
+                      />
+                      <XAxis 
+                        dataKey="month" 
+                        stroke="#666"
+                        tick={{ fill: '#666', fontSize: 12 }}
+                        axisLine={{ stroke: '#e0e0e0' }}
+                      />
+                      <YAxis 
+                        stroke="#666"
+                        tick={{ fill: '#666', fontSize: 12 }}
+                        axisLine={{ stroke: '#e0e0e0' }}
+                        tickFormatter={(value) => `$${value}`}
+                      />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend 
+                        verticalAlign="top" 
+                        height={36}
+                        iconType="rect"
+                        iconSize={8}
+                      />
+                      <Bar
+                        dataKey="usage"
+                        fill="#2196f3"
+                        name="Energy Usage ($)"
+                        shape={<CustomBar />}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="savings"
+                        stroke="#4caf50"
+                        strokeWidth={2}
+                        name="Projected Savings ($)"
+                        dot={{ stroke: '#4caf50', strokeWidth: 2, r: 4, fill: 'white' }}
+                        activeDot={{ r: 6, stroke: '#4caf50', strokeWidth: 2, fill: 'white' }}
+                        connectNulls={true}
+                        label={{ 
+                          position: 'top',
+                          fill: '#4caf50',
+                          fontSize: 12,
+                          formatter: (value: any) => value ? `$${value}` : ''
+                        }}
+                      />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </Box>
+              )}
 
               <Box sx={{ width: 250, height: 250, position: 'relative' }}>
                 <Typography 

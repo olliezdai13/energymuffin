@@ -10,7 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useAppContext } from '../context/AppContext';
 
 interface SignInButtonProps {
-  onSignIn?: () => void;
+  onSignIn?: (customerId: number) => void;
 }
 
 export function SignInButton({ onSignIn }: SignInButtonProps) {
@@ -49,7 +49,10 @@ export function SignInButton({ onSignIn }: SignInButtonProps) {
         clearInterval(pollInterval);
         setIsModalOpen(false);
         setIsWaiting(false);
-        onSignIn?.();
+        // wait 1 second before calling onSignIn
+        setTimeout(() => {
+          onSignIn?.(customerId);
+        }, 1000);
       }
     }, 5000); // Poll every 5 seconds
 
@@ -61,23 +64,23 @@ export function SignInButton({ onSignIn }: SignInButtonProps) {
     try {
       setIsModalOpen(true);
       setIsWaiting(true);
-      
+
       // Call the sign-in API
       const response = await fetch('/api/bayou/signIn', {
         method: 'POST',
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to generate sign-in link');
       }
-      
+
       const data = await response.json();
       setCustomerId(data.customer_id);
       setOnboardingLink(data.onboarding_link);
 
       // Start polling for credentials
       startPolling(data.customer_id);
-      
+
     } catch (error) {
       console.error('Error during sign-in:', error);
       setIsWaiting(false);
@@ -100,9 +103,9 @@ export function SignInButton({ onSignIn }: SignInButtonProps) {
           Sign In
         </Button>
       ) : (
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
           gap: 2,
           ml: 'auto',
           p: 1,
