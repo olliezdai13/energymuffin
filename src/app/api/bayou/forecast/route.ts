@@ -1,8 +1,6 @@
-import { ConsumptionRecord, createConsumptionRecord, createForecastRequest, ForecastRequest } from '@/app/models/palmettoRequest';
-import { createConsumptionResponse, createForecastResponseRecord } from '@/app/models/palmettoResponse';
-import { formatCustomerAddress, getCustomerBillHistory, getCustomerDetails } from '@/app/services/bayou';
+import { createConsumptionRecord } from '@/app/models/palmettoRequest';
+import { getCustomerBillHistory } from '@/app/services/bayou';
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
 
 const THERMS_TO_KWH = 29.3001;
 
@@ -10,7 +8,8 @@ export async function POST(request: NextRequest) {
     try {
         const searchParams = request.nextUrl.searchParams;
         const customerId = parseInt(searchParams.get('customerId') || '0', 10);
-        const months = parseInt(searchParams.get('months') || '12', 10);
+        const monthsBefore = parseInt(searchParams.get('monthsBefore') || '12', 10);
+        const monthsAfter = parseInt(searchParams.get('months') || '12', 10);
 
         if (!customerId) {
             return NextResponse.json(
@@ -19,15 +18,22 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (isNaN(months) || months <= 0) {
+        if (isNaN(monthsBefore) || monthsBefore <= 0) {
             return NextResponse.json(
-                { error: 'Invalid months parameter' },
+                { error: 'Invalid monthsBefore parameter' },
                 { status: 400 }
             );
         }
 
-        console.log(`Fetching bill history for customer ${customerId} for ${months} months`);
-        const bills = await getCustomerBillHistory(customerId, months);
+        if (isNaN(monthsAfter) || monthsAfter <= 0) {
+            return NextResponse.json(
+                { error: 'Invalid monthsAfter parameter' },
+                { status: 400 }
+            );
+        }
+
+        console.log(`Fetching bill history for customer ${customerId} for ${monthsBefore} months before and ${monthsAfter} months after`);
+        const bills = await getCustomerBillHistory(customerId, monthsBefore);
 
         // filter bills by ones with billing_period_from, billing_period_to
         const billsWithDates = bills.filter(bill => bill.billing_period_from && bill.billing_period_to);
@@ -44,8 +50,9 @@ export async function POST(request: NextRequest) {
 
         // Create forecast request for the same time period
         const endDate = new Date();
+        endDate.setMonth(endDate.getMonth() + monthsAfter);
         const startDate = new Date();
-        startDate.setMonth(startDate.getMonth() - months);
+        startDate.setMonth(startDate.getMonth() - monthsBefore);
 
         // random address for now (until we have a way to get the customer's address via creating a new Bayou customer and intaking address field)
         const customerAddress = "3048 Partridge Ave, Oakland, CA 94605"; // await formatCustomerAddress(customerId);

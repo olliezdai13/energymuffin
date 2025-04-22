@@ -90,34 +90,6 @@ export async function getCustomerBillHistory(customerId: number, months: number 
     }
 }
 
-export async function getCustomerDetails(customerId: number) {
-    try {
-        initBayouClient();
-        const response = await bayou.getCustomersId({
-            id: customerId.toString()
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching customer details:', error);
-        throw error;
-    }
-}
-
-export async function formatCustomerAddress(customerId: number): Promise<string> {
-    try {
-        const customerDetails = await getCustomerDetails(customerId);
-        const address1 = customerDetails.address_line_1?.trim() || '';
-        const address2 = customerDetails.address_line_2?.trim() || '';
-        
-        // If address2 exists, combine with address1 using a comma
-        // Otherwise just return address1
-        return address2 ? `${address1}, ${address2}` : address1;
-    } catch (error) {
-        console.error('Error formatting customer address:', error);
-        throw error;
-    }
-}
-
 // for testing purposes, ignore.
 export async function quickStart() {
     try {
