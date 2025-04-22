@@ -1,70 +1,46 @@
 'use client';
 
-import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import { MuffinLogo } from './muffin-logo';
+import styles from "./page.module.css";
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import LockIcon from '@mui/icons-material/Lock';
+import ContactSupportIcon from '@mui/icons-material/ContactSupport';
+import LogoutIcon from '@mui/icons-material/Logout';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
-import styles from "./page.module.css";
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-// Mock data for energy usage and projected savings
-const energyData = [
-  { month: 'Jan', usage: 120, savings: null, isForecasted: false },
-  { month: 'Feb', usage: 135, savings: null, isForecasted: false },
-  { month: 'Mar', usage: 130, savings: null, isForecasted: false },
-  { month: 'Apr', usage: 125, savings: null, isForecasted: false },
-  { month: 'May', usage: 110, savings: 30, isForecasted: true },
-  { month: 'Jun', usage: 105, savings: 35, isForecasted: true },
-  { month: 'Jul', usage: 100, savings: 40, isForecasted: true },
-  { month: 'Aug', usage: 95, savings: 45, isForecasted: true },
-  { month: 'Sep', usage: 90, savings: 50, isForecasted: true },
-  { month: 'Oct', usage: 85, savings: 55, isForecasted: true },
-  { month: 'Nov', usage: 80, savings: 60, isForecasted: true },
-  { month: 'Dec', usage: 75, savings: 65, isForecasted: true },
+// Sample data for comparison charts
+const withoutMuffinData = [
+  { month: 'Jan', spend: 120 },
+  { month: 'Feb', spend: 135 },
+  { month: 'Mar', spend: 130 },
+  { month: 'Apr', spend: 125 },
 ];
 
-const pieData = [
-  { name: 'Space Heating', value: 41, color: '#2196f3' },
-  { name: 'Water Heating', value: 26, color: '#ff9800' },
-  { name: 'Appliances', value: 15, color: '#4caf50' },
-  { name: 'Lighting', value: 12, color: '#9c27b0' },
-  { name: 'Other', value: 6, color: '#e0e0e0' }
+const withMuffinData = [
+  { month: 'Jan', spend: 90, savings: 30 },
+  { month: 'Feb', spend: 95, savings: 40 },
+  { month: 'Mar', spend: 85, savings: 45 },
+  { month: 'Apr', spend: 80, savings: 45 },
 ];
-
-const CustomBar = (props: any) => {
-  const { fill, x, y, width, height, isForecasted, value } = props;
-  
-  return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        fill={fill}
-        fillOpacity={isForecasted ? 0.7 : 1}
-        stroke={fill}
-        strokeWidth={2}
-        strokeDasharray={isForecasted ? "4 4" : "0"}
-        rx={4}
-        ry={4}
-      />
-      <text
-        x={x + width / 2}
-        y={y - 6}
-        textAnchor="middle"
-        fill="#666"
-        fontSize={12}
-      >
-        ${value}
-      </text>
-    </g>
-  );
-};
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -75,30 +51,19 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         border: '1px solid rgba(0, 0, 0, 0.05)'
       }}>
         <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-          {label} {payload[0]?.payload?.isForecasted ? '(Forecasted)' : '(Historical)'}
+          {label}
         </Typography>
-        {payload.map((entry: any, index: number) => (
-          <Typography 
-            key={index} 
-            variant="body2" 
-            sx={{ 
-              color: entry.color,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              mb: 0.5
-            }}
-          >
-            <Box component="span" sx={{ 
-              width: 8, 
-              height: 8, 
-              borderRadius: entry.dataKey === 'savings' ? '50%' : '2px', 
-              backgroundColor: entry.color,
-              display: 'inline-block'
-            }} />
-            {entry.name}: ${entry.value}
-          </Typography>
-        ))}
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            color: payload[0].color,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1
+          }}
+        >
+          Energy Spend: ${payload[0].value}
+        </Typography>
       </Paper>
     );
   }
@@ -106,10 +71,15 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function Home() {
+  const [selectedTab, setSelectedTab] = React.useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
   const [customerId, setCustomerId] = useState<number | null>(null);
   const [onboardingLink, setOnboardingLink] = useState<string | null>(null);
+
+  const handleTabChange = (index: number) => {
+    setSelectedTab(index);
+  };
 
   const handleSignIn = async () => {
     try {
@@ -129,8 +99,6 @@ export default function Home() {
       setCustomerId(data.customer_id);
       setOnboardingLink(data.onboarding_link);
 
-      
-
       // Close modal and reset states
       setIsModalOpen(false);
       setIsWaiting(false);
@@ -143,210 +111,358 @@ export default function Home() {
     }
   };
 
+  const drawerWidth = 240;
+
+  const menuItems = [
+    { text: 'Account Information', icon: <AccountCircleIcon /> },
+    { text: 'View my Recommendations', icon: <LightbulbIcon />, href: '/dashboard' },
+    { text: 'Bill Prediction', icon: <TrendingUpIcon /> },
+    { text: 'Change Password', icon: <LockIcon /> },
+    { text: 'Contact', icon: <ContactSupportIcon /> },
+    { text: 'Log Out', icon: <LogoutIcon /> },
+  ];
+
   return (
     <main className={styles.page}>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ width: '100%', mb: 6 }}>
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            gap: 2,
-            mb: 4
-          }}>
-            <Typography variant="h4" component="h1" sx={{ fontWeight: 600 }}>
-              Energy Muffin
-            </Typography>
+      <AppBar position="fixed" elevation={0} sx={{ 
+        backgroundColor: 'white', 
+        borderBottom: '1px solid rgba(0, 0, 0, 0.05)',
+        zIndex: (theme) => theme.zIndex.drawer + 1
+      }}>
+        <Container maxWidth="lg">
+          <Toolbar sx={{ px: '0 !important' }}>
+            <Box 
+              component="a" 
+              href="/"
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1,
+                textDecoration: 'none',
+                color: 'inherit',
+                '&:hover': {
+                  opacity: 0.8
+                }
+              }}
+            >
+              <MuffinLogo width={32} height={32} />
+              <Typography variant="h6" sx={{ color: '#1a1a1a', fontWeight: 600 }}>
+                Energy Muffin
+              </Typography>
+            </Box>
             <Button 
               variant="contained" 
               color="primary"
               onClick={handleSignIn}
-              sx={{ ml: 2 }}
+              sx={{ ml: 'auto' }}
             >
               Sign In
             </Button>
-          </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
 
-          <Modal
-            open={isModalOpen}
-            onClose={() => !isWaiting && setIsModalOpen(false)}
-            aria-labelledby="sign-in-modal"
-            aria-describedby="sign-in-modal-description"
-          >
-            <Box sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 400,
-              bgcolor: 'background.paper',
-              boxShadow: 24,
-              p: 4,
-              borderRadius: 2,
-              textAlign: 'center'
-            }}>
-              {isWaiting ? (
-                <>
-                  <CircularProgress sx={{ mb: 2 }} />
-                  <Typography variant="h6" gutterBottom>
-                    Waiting for credentials...
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Please complete the sign-in process in the new window
-                  </Typography>
-                </>
-              ) : (
-                <>
-                  <Typography variant="h6" gutterBottom>
-                    Sign In Required
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    Please sign in to view your energy data
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSignIn}
-                    disabled={isWaiting}
-                  >
-                    Start Sign In
-                  </Button>
-                </>
-              )}
-            </Box>
-          </Modal>
-
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-            <Paper elevation={0} sx={{ 
-              p: 3, 
-              width: '100%',
-              borderRadius: 3,
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-              border: '1px solid rgba(0, 0, 0, 0.05)',
-              background: '#e3f2fd'
-            }}>
-              <Typography variant="h6" gutterBottom sx={{ color: '#1976d2', fontWeight: 600 }}>
-                Save more by doing this
+      <Modal
+        open={isModalOpen}
+        onClose={() => !isWaiting && setIsModalOpen(false)}
+        aria-labelledby="sign-in-modal"
+        aria-describedby="sign-in-modal-description"
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          boxShadow: 24,
+          p: 4,
+          borderRadius: 2,
+          textAlign: 'center'
+        }}>
+          {isWaiting ? (
+            <>
+              <CircularProgress sx={{ mb: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                Waiting for credentials...
               </Typography>
-              <Typography variant="h5" sx={{ color: '#1976d2' }}>
-                Heat your home before 4 PM to save up to $30/month
+              <Typography variant="body2" color="text.secondary">
+                Please complete the sign-in process in the new window
               </Typography>
-            </Paper>
-          </Box>
-          
-          <Paper elevation={0} sx={{ 
-            p: 4, 
-            width: '100%',
-            background: 'white',
-            borderRadius: 3,
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-            border: '1px solid rgba(0, 0, 0, 0.05)'
-          }}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 3, fontWeight: 600, color: '#1a1a1a' }}>
-              Monthly Energy Usage ($) for Heating
-            </Typography>
-            <Box sx={{ 
-              width: '100%', 
-              display: 'flex',
-              gap: 4,
-              alignItems: 'center'
-            }}>
-              <Box sx={{ flex: 1, height: 400, position: 'relative' }}>
-                <ResponsiveContainer>
-                  <ComposedChart
-                    data={energyData}
-                    margin={{ top: 40, right: 30, left: 20, bottom: 20 }}
-                    barSize={32}
-                  >
-                    <CartesianGrid 
-                      strokeDasharray="3 3" 
-                      stroke="#f0f0f0"
-                      vertical={false}
-                    />
-                    <XAxis 
-                      dataKey="month" 
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 12 }}
-                      axisLine={{ stroke: '#e0e0e0' }}
-                    />
-                    <YAxis 
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 12 }}
-                      axisLine={{ stroke: '#e0e0e0' }}
-                      tickFormatter={(value: any) => `$${value}`}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend 
-                      verticalAlign="top" 
-                      height={36}
-                      iconType="rect"
-                      iconSize={8}
-                    />
-                    <Bar
-                      dataKey="usage"
-                      fill="#2196f3"
-                      name="Energy Usage ($)"
-                      shape={<CustomBar />}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="savings"
-                      stroke="#4caf50"
-                      strokeWidth={2}
-                      name="Projected Savings ($)"
-                      dot={{ stroke: '#4caf50', strokeWidth: 2, r: 4, fill: 'white' }}
-                      activeDot={{ r: 6, stroke: '#4caf50', strokeWidth: 2, fill: 'white' }}
-                      connectNulls={true}
-                      label={{ 
-                        position: 'top',
-                        fill: '#4caf50',
-                        fontSize: 12,
-                        formatter: (value: any) => value ? `$${value}` : ''
-                      }}
-                    />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </Box>
-
-              <Box sx={{ width: 250, height: 250, position: 'relative' }}>
-                <Typography 
-                  variant="subtitle1" 
-                  align="center" 
-                  sx={{ mb: 2, fontWeight: 600, color: '#1a1a1a' }}
-                >
-                  Energy Usage Breakdown
-                </Typography>
-                <ResponsiveContainer>
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={entry.color}
-                          fillOpacity={entry.name === 'Space Heating' ? 1 : 0.7}
-                          stroke={entry.name === 'Space Heating' ? '#1976d2' : 'none'}
-                          strokeWidth={entry.name === 'Space Heating' ? 2 : 0}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      formatter={(value: any) => `${value}%`}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </Box>
-            </Box>
-          </Paper>
+            </>
+          ) : (
+            <>
+              <Typography variant="h6" gutterBottom>
+                Sign In Required
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                Please sign in to view your energy data
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSignIn}
+                disabled={isWaiting}
+              >
+                Start Sign In
+              </Button>
+            </>
+          )}
         </Box>
-      </Container>
+      </Modal>
+
+      <Box sx={{ display: 'flex' }}>
+        <Drawer
+          variant="permanent"
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+              borderRight: '1px solid rgba(0, 0, 0, 0.05)',
+              backgroundColor: 'white',
+              marginTop: '64px', // Height of the AppBar
+            },
+          }}
+        >
+          <List>
+            {menuItems.map((item, index) => (
+              <ListItem
+                key={item.text}
+                onClick={() => handleTabChange(index)}
+                component={item.href ? 'a' : 'div'}
+                href={item.href}
+                sx={{
+                  backgroundColor: selectedTab === index ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
+                  '&:hover': {
+                    backgroundColor: selectedTab === index 
+                      ? 'rgba(25, 118, 210, 0.12)' 
+                      : 'rgba(0, 0, 0, 0.04)',
+                  },
+                  textDecoration: 'none',
+                  color: 'inherit',
+                }}
+              >
+                <ListItemIcon sx={{ color: selectedTab === index ? '#1976d2' : '#666' }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.text} 
+                  sx={{ 
+                    color: selectedTab === index ? '#1976d2' : '#666',
+                    '& .MuiTypography-root': {
+                      fontWeight: selectedTab === index ? 600 : 400,
+                    },
+                  }}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
+
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Box sx={{ py: 8 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              textAlign: 'center',
+              gap: 4
+            }}>
+              <Box sx={{ maxWidth: 600 }}>
+                <Typography variant="h3" gutterBottom sx={{ 
+                  fontWeight: 700, 
+                  color: '#1a1a1a',
+                  textAlign: 'center'
+                }}>
+                  Welcome, Troy!
+                </Typography>
+                <Typography variant="h5" sx={{ color: '#666', mb: 4 }}>
+                  Energy Muffin is your smart energy companion for a more sustainable and cost-effective home.
+                </Typography>
+              </Box>
+
+              {/* Comparison Charts */}
+              <Paper elevation={0} sx={{ 
+                p: 4,
+                width: '100%',
+                borderRadius: 3,
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+                border: '1px solid rgba(0, 0, 0, 0.05)',
+                background: 'white'
+              }}>
+                <Typography variant="h4" gutterBottom sx={{ mb: 4, fontWeight: 600, color: '#1a1a1a', textAlign: 'center' }}>
+                  See the Difference
+                </Typography>
+                
+                <Box sx={{ 
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+                  gap: 4
+                }}>
+                  {/* Without Muffin Chart */}
+                  <Box>
+                    <Typography variant="h6" gutterBottom sx={{ mb: 2, color: '#666', textAlign: 'center' }}>
+                      Without Energy Muffin
+                    </Typography>
+                    <Box sx={{ height: 300 }}>
+                      <ResponsiveContainer>
+                        <BarChart
+                          data={withoutMuffinData}
+                          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                          <XAxis 
+                            dataKey="month" 
+                            stroke="#666"
+                            tick={{ fill: '#666', fontSize: 12 }}
+                          />
+                          <YAxis 
+                            stroke="#666"
+                            tick={{ fill: '#666', fontSize: 12 }}
+                            tickFormatter={(value) => `$${value}`}
+                            domain={[0, 140]}
+                          />
+                          <Tooltip content={<CustomTooltip />} />
+                          <Bar 
+                            dataKey="spend" 
+                            fill="#ff9800"
+                            radius={[4, 4, 0, 0]}
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </Box>
+                  </Box>
+
+                  {/* With Muffin Chart */}
+                  <Box>
+                    <Typography variant="h6" gutterBottom sx={{ mb: 2, color: '#1976d2', textAlign: 'center' }}>
+                      With Energy Muffin
+                    </Typography>
+                    <Box sx={{ height: 300 }}>
+                      <ResponsiveContainer>
+                        <BarChart
+                          data={withMuffinData}
+                          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                        >
+                          <defs>
+                            <pattern id="savings-pattern" patternUnits="userSpaceOnUse" width="10" height="10">
+                              <path d="M-2,2 l4,-4 M0,10 l10,-10 M8,12 l4,-4" 
+                                    style={{ stroke: '#4caf50', strokeWidth: 2 }} />
+                            </pattern>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                          <XAxis 
+                            dataKey="month" 
+                            stroke="#666"
+                            tick={{ fill: '#666', fontSize: 12 }}
+                          />
+                          <YAxis 
+                            stroke="#666"
+                            tick={{ fill: '#666', fontSize: 12 }}
+                            tickFormatter={(value) => `$${value}`}
+                            domain={[0, 140]}
+                          />
+                          <Tooltip 
+                            content={({ active, payload, label }) => {
+                              if (active && payload && payload.length >= 2) {
+                                const currentSpend = payload[0].value as number;
+                                const savings = payload[1].value as number;
+                                return (
+                                  <Paper sx={{ 
+                                    p: 2, 
+                                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+                                    border: '1px solid rgba(0, 0, 0, 0.05)'
+                                  }}>
+                                    <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
+                                      {label}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: '#1976d2' }}>
+                                      Current Spend: ${currentSpend}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: '#4caf50' }}>
+                                      Savings: ${savings}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ color: '#666', fontWeight: 600 }}>
+                                      Total: ${currentSpend + savings}
+                                    </Typography>
+                                  </Paper>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                          <Bar 
+                            dataKey="spend" 
+                            fill="#1976d2"
+                            radius={[4, 4, 0, 0]}
+                            stackId="stack"
+                          />
+                          <Bar 
+                            dataKey="savings" 
+                            fill="url(#savings-pattern)"
+                            fillOpacity={1}
+                            stroke="#4caf50"
+                            strokeWidth={1}
+                            radius={[4, 4, 0, 0]}
+                            stackId="stack"
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </Box>
+                  </Box>
+                </Box>
+
+                <Box sx={{ textAlign: 'center', mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Typography variant="h5" sx={{ color: '#4caf50', fontWeight: 600 }}>
+                    Save up to 30% on your energy bills
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: '#666', mt: 1, mb: 4 }}>
+                    Energy Muffin helps you optimize your energy usage with smart recommendations
+                  </Typography>
+                  <Button 
+                    variant="contained" 
+                    size="large"
+                    href="/dashboard"
+                    sx={{ 
+                      px: 4, 
+                      py: 1.5,
+                      fontSize: '1.2rem',
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      boxShadow: '0 8px 32px rgba(25, 118, 210, 0.24)',
+                      '&:hover': {
+                        boxShadow: '0 8px 32px rgba(25, 118, 210, 0.32)',
+                      }
+                    }}
+                  >
+                    View my Recommendations
+                  </Button>
+                  <FormControlLabel
+                    control={
+                      <Checkbox 
+                        sx={{
+                          color: '#1976d2',
+                          '&.Mui-checked': {
+                            color: '#1976d2',
+                          },
+                        }}
+                      />
+                    }
+                    label={
+                      <Typography variant="body1" sx={{ color: '#666', fontSize: '1.1rem' }}>
+                        Give me timely notifications on how I can save more money
+                      </Typography>
+                    }
+                    sx={{ mt: 2 }}
+                  />
+                </Box>
+              </Paper>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
     </main>
   );
 }
