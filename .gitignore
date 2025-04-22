@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+.api/apis/bayou/node_modules
 
 # next.js build output
 /.next

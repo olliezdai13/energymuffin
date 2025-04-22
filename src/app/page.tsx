@@ -76,6 +76,44 @@ export default function Home() {
   const [isWaiting, setIsWaiting] = useState(false);
   const [customerId, setCustomerId] = useState<number | null>(null);
   const [onboardingLink, setOnboardingLink] = useState<string | null>(null);
+  const [hasCredentials, setHasCredentials] = useState(false);
+
+  const checkCredentials = async (customerId: number) => {
+    try {
+      const response = await fetch('/api/bayou/credentialCheck', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ customer_id: customerId })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check credentials');
+      }
+
+      const data = await response.json();
+      return data.has_credentials;
+    } catch (error) {
+      console.error('Error checking credentials:', error);
+      return false;
+    }
+  };
+
+  const startPolling = (customerId: number) => {
+    const pollInterval = setInterval(async () => {
+      const hasCreds = await checkCredentials(customerId);
+      if (hasCreds) {
+        setHasCredentials(true);
+        clearInterval(pollInterval);
+        setIsModalOpen(false);
+        setIsWaiting(false);
+      }
+    }, 5000); // Poll every 5 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(pollInterval);
+  };
 
   const handleTabChange = (index: number) => {
     setSelectedTab(index);
@@ -99,11 +137,8 @@ export default function Home() {
       setCustomerId(data.customer_id);
       setOnboardingLink(data.onboarding_link);
 
-      // Close modal and reset states
-      setIsModalOpen(false);
-      setIsWaiting(false);
-      setCustomerId(null);
-      setOnboardingLink(null);
+      // Start polling for credentials
+      startPolling(data.customer_id);
       
     } catch (error) {
       console.error('Error during sign-in:', error);
