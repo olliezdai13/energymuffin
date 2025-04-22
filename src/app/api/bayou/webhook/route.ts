@@ -1,13 +1,6 @@
 import { NextResponse } from 'next/server';
 import { webhookEvents } from '@/app/services/webhookEvents';
 
-// Verify webhook signature
-function verifyWebhookSignature(signature: string, payload: string) {
-  // TODO: Implement signature verification
-  // This should verify that the webhook is actually from Bayou
-  return true;
-}
-
 export async function POST(request: Request) {
   try {
     console.log('=== Webhook Received ===');
