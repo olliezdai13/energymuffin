@@ -1,11 +1,10 @@
-import { ConsumptionRecord, createConsumptionRecord, createForecastRequest, ForecastRequest } from '@/app/models/palmettoRequest';
-import { createConsumptionResponse, createForecastResponseRecord } from '@/app/models/palmettoResponse';
-import { formatCustomerAddress, getCustomerBillHistory, getCustomerDetails } from '@/app/services/bayou';
+import { ConsumptionRecord, createConsumptionRecord } from '@/app/models/palmettoRequest';
+import { getCustomerBillHistory } from '@/app/services/bayou';
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
 
 const THERMS_TO_KWH = 29.3001;
 
+// fetches a 12 month history of bills 
 export async function GET(request: NextRequest) {
     try {
         const searchParams = request.nextUrl.searchParams;
@@ -42,52 +41,7 @@ export async function GET(request: NextRequest) {
         ));
         console.log(`Created ${consumptionRecords.length} consumption records`);
 
-        // Create forecast request for the same time period
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setMonth(startDate.getMonth() - months);
-
-        // Random address for now (until we have a way to get the customer's address via creating a new Bayou customer and intaking address field)
-        const customerAddress = "3048 Partridge Ave, Oakland, CA 94605"; // await formatCustomerAddress(customerId);
-
-        const forecastRequest = {
-            address: customerAddress,
-            from_datetime: startDate.toISOString().split('T')[0],
-            to_datetime: endDate.toISOString().split('T')[0],
-            granularity: 'month'
-        };
-
-        console.log('Calling data API with:', {
-            url: `${process.env.DATA_API_URL}/consumption`,
-            forecastRequest,
-            consumptionRecordsCount: consumptionRecords.length
-        });
-
-        // Call data API
-        const response = await fetch(`${process.env.DATA_API_URL}/consumption`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                forecast: forecastRequest,
-                consumption_records: consumptionRecords
-            })
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Data API error response:', {
-                status: response.status,
-                statusText: response.statusText,
-                body: errorText
-            });
-            throw new Error(`Data API error: ${response.status} ${response.statusText} - ${errorText}`);
-        }
-
-        const data = await response.json();
-        console.log('Data API response:', data);
-        return NextResponse.json(data);
+        return NextResponse.json(consumptionRecords);
     } catch (error) {
         console.error('Error in /api/bayou/history:', error);
         return NextResponse.json(
