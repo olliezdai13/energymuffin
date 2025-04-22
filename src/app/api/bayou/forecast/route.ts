@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         startDate.setMonth(startDate.getMonth() - monthsBefore);
 
         // random address for now (until we have a way to get the customer's address via creating a new Bayou customer and intaking address field)
-        const customerAddress = "3048 Partridge Ave, Oakland, CA 94605"; // await formatCustomerAddress(customerId);
+        const customerAddress = "33769 Mello Way, Fremont, CA 94555"; // await formatCustomerAddress(customerId);
 
         const forecastRequest = {
             address: customerAddress,
