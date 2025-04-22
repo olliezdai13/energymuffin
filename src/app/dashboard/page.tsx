@@ -16,6 +16,7 @@ import styles from "../page.module.css";
 import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
 import React, { useState } from 'react';
+import { SignInButton } from '../components/SignInButton';
 
 // Mock data for energy usage and projected savings
 const energyData = [
@@ -212,35 +213,7 @@ export default function Dashboard() {
             </Box>
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              {!hasCredentials ? (
-                <Button
-                  variant="contained"
-                  onClick={handleSignIn}
-                  sx={{
-                    backgroundColor: '#1976d2',
-                    '&:hover': {
-                      backgroundColor: '#1565c0',
-                    },
-                  }}
-                >
-                  Sign In
-                </Button>
-              ) : (
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 2,
-                  ml: 'auto',
-                  p: 1,
-                  borderRadius: 1,
-                  backgroundColor: 'rgba(25, 118, 210, 0.08)'
-                }}>
-                  <AccountCircleIcon sx={{ color: '#1976d2' }} />
-                  <Typography variant="body1" sx={{ color: '#1a1a1a', fontWeight: 500 }}>
-                    Welcome, Troy
-                  </Typography>
-                </Box>
-              )}
+              <SignInButton />
             </Box>
           </Toolbar>
         </Container>

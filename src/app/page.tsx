@@ -26,6 +26,7 @@ import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import Modal from '@mui/material/Modal';
 import CircularProgress from '@mui/material/CircularProgress';
 import React, { useState } from 'react';
+import { SignInButton } from './components/SignInButton';
 
 // Sample data for comparison charts
 const withoutMuffinData = [
@@ -185,31 +186,10 @@ export default function Home() {
                 Energy Muffin
               </Typography>
             </Box>
-            {hasCredentials ? (
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 2,
-                ml: 'auto',
-                p: 1,
-                borderRadius: 1,
-                backgroundColor: 'rgba(25, 118, 210, 0.08)'
-              }}>
-                <AccountCircleIcon sx={{ color: '#1976d2' }} />
-                <Typography variant="body1" sx={{ color: '#1a1a1a', fontWeight: 500 }}>
-                  Welcome, Troy
-                </Typography>
-              </Box>
-            ) : (
-              <Button 
-                variant="contained" 
-                color="primary"
-                onClick={handleSignIn}
-                sx={{ ml: 'auto' }}
-              >
-                Sign In
-              </Button>
-            )}
+            <Box sx={{ flexGrow: 1 }} />
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <SignInButton />
+            </Box>
           </Toolbar>
         </Container>
       </AppBar>
